@@ -154,6 +154,7 @@ AGENTS.md            instructions for agents changing Hechent
 README.md            human entry point
 LICENSE              MIT
 docs/
+  guide.md           user walkthrough with sample issues, standalone and with Docket
   skill-authoring.md the convention every skill follows
   adr/               decisions about Hechent itself
   research/          what was learned from reference projects

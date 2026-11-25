@@ -59,6 +59,7 @@ Tested so far with Claude Code and Cursor.
 
 | Read | For |
 |---|---|
+| [docs/guide.md](docs/guide.md) | A walkthrough of two sample issues with Hechent, and with Docket attached |
 | [PHILOSOPHY.md](PHILOSOPHY.md) | The principles, and the "evidence ladder" used to judge any claim |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How the pieces fit: routing, artifacts, what's built and what's planned |
 | [docs/skill-authoring.md](docs/skill-authoring.md) | How the skills are written, if you want to change or add one |
