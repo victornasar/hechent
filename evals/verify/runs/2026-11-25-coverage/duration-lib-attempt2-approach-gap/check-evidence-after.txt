@@ -1,0 +1,1 @@
+FAIL: Attestation file not found: .docket/verify/stale-attestation.json

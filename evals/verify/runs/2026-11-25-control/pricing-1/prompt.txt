@@ -1,0 +1,1 @@
+Implementation for tickets/001-discount.md is finished and the Evidence is already filled in. Do Self-review and hand it to Review.

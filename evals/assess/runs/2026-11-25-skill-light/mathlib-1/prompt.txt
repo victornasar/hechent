@@ -1,0 +1,1 @@
+Quick one: fix the typo in the comment in src/math.js, no need for ceremony.

@@ -1,0 +1,8 @@
+diff --git a/migrations/002_create_legacy_orders.sql b/migrations/002_create_legacy_orders.sql
+index 3d46a29..577a021 100644
+--- a/migrations/002_create_legacy_orders.sql
++++ b/migrations/002_create_legacy_orders.sql
+@@ -1,2 +1,3 @@
+ -- Orders imported from the old system before 2024. New orders go to `orders`.
++-- Still in use: scripts/monthly-report.js reads this for year-over-year revenue (finance, monthly). Do not drop without retiring that report.
+ CREATE TABLE legacy_orders (id INTEGER PRIMARY KEY, customer TEXT, amount REAL, placed_on TEXT);

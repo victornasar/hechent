@@ -1,0 +1,1 @@
+Implement the discount as we agreed: percentage, applied before VAT, refunds prorate the discount.

@@ -1,0 +1,23 @@
+diff --git a/src/auth.js b/src/auth.js
+index 2142e09..76311e6 100644
+--- a/src/auth.js
++++ b/src/auth.js
+@@ -1,7 +1,7 @@
+ // Who may modify a document.
++const PRIVILEGED = ['admin', 'editor'];
+ function canEdit(user, doc) {
+   if (!user) return false;
+-  if (user.role === 'admin') return true;
+-  return user.id != null && doc.ownerId === user.id;
++  return PRIVILEGED.includes(user.role) || doc.ownerId === user.id;
+ }
+ module.exports = { canEdit };
+diff --git a/test/auth.test.js b/test/auth.test.js
+index 100c6c3..0897c59 100644
+--- a/test/auth.test.js
++++ b/test/auth.test.js
+@@ -4,3 +4,4 @@ const doc = { id: 'd1', ownerId: 'u1' };
+ test('admin can edit', () => assert.ok(canEdit({ id: 'a', role: 'admin' }, doc)));
+ test('owner can edit', () => assert.ok(canEdit({ id: 'u1', role: 'viewer' }, doc)));
+ test('other viewer cannot edit', () => assert.ok(!canEdit({ id: 'u2', role: 'viewer' }, doc)));
++test('editor can edit', () => assert.ok(canEdit({ id: 'e', role: 'editor' }, doc)));

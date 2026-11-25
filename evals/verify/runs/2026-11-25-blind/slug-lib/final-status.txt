@@ -1,0 +1,2 @@
+ M src/slug.js
+ M test/slug.test.js

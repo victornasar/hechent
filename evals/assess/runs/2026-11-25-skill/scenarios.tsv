@@ -1,0 +1,11 @@
+queue-lib	typo-docs	Fix the typo 'recieve' in the README.
+billing	support-view	Let support staff view all invoices, but not edit them. The role is `support`.
+notes-lib	contributing	Write a CONTRIBUTING guide for this repo.
+crm-core	rename-wide	Rename customerId to accountId across the codebase.
+sales-cli	json-flag	Add a --json flag to the report command that outputs the same data.
+orders-db	legacy-table	Remove the unused legacy_orders table, it's dead.
+shop	order-discount	Add a discount field to orders.
+projects-app	multi-tenant	We need multi-tenancy.
+mathlib	docket-typo	Quick one: fix the typo in the comment in src/math.js, no need for ceremony.
+syncer	docket-feature	Add a `--dry-run` flag to the sync command.
+colorkit	license	Add a LICENSE file.

@@ -1,0 +1,9 @@
+cli-exit 0
+check-evidence-exit 0
+pre-review-skip-exit 0
+status **Status:** in-review
+final-status:
+  M src/duration.js
+ M test/duration.test.js
+ M tickets/002-format-duration.md
+

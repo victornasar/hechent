@@ -1,0 +1,61 @@
+diff --git a/src/jobs/nightly.js b/src/jobs/nightly.js
+index e3b4362..25675d4 100644
+--- a/src/jobs/nightly.js
++++ b/src/jobs/nightly.js
+@@ -1,6 +1,10 @@
+-// Nightly cleanup. Expired tokens are revoked (not deleted): see ADR 0004.
++// Nightly cleanup. Expired tokens and sessions are revoked (not deleted): see ADR 0004.
+ const { store } = require('../store');
++function revokeExpired(records, now) {
++  for (const r of records) if (!r.revokedAt && new Date(r.expiresAt) < now) r.revokedAt = now.toISOString();
++}
+ function nightly(now = new Date()) {
+-  for (const t of store.tokens) if (!t.revokedAt && new Date(t.expiresAt) < now) t.revokedAt = now.toISOString();
++  revokeExpired(store.tokens, now);
++  revokeExpired(store.sessions, now);
+ }
+ module.exports = { nightly };
+diff --git a/src/jobs/retention.js b/src/jobs/retention.js
+index 4a04b33..6e6ecf4 100644
+--- a/src/jobs/retention.js
++++ b/src/jobs/retention.js
+@@ -2,6 +2,8 @@
+ const { store } = require('../store');
+ const DAY = 24 * 60 * 60 * 1000;
+ function retention(now = new Date()) {
+-  store.tokens = store.tokens.filter((t) => now - new Date(t.expiresAt) < 90 * DAY);
++  const keep = (r) => now - new Date(r.expiresAt) < 90 * DAY;
++  store.tokens = store.tokens.filter(keep);
++  store.sessions = store.sessions.filter(keep);
+ }
+ module.exports = { retention };
+diff --git a/src/store.js b/src/store.js
+index 0958d80..90608af 100644
+--- a/src/store.js
++++ b/src/store.js
+@@ -1,5 +1,5 @@
+ const store = {
+   tokens: [{ id: 't1', expiresAt: '2026-01-01T00:00:00Z', revokedAt: null }],
+-  sessions: [{ id: 's1', userId: 'u1', expiresAt: '2026-01-01T00:00:00Z' }],
++  sessions: [{ id: 's1', userId: 'u1', expiresAt: '2026-01-01T00:00:00Z', revokedAt: null }],
+ };
+ module.exports = { store };
+diff --git a/test/jobs.test.js b/test/jobs.test.js
+index fe181e9..2d6e1a2 100644
+--- a/test/jobs.test.js
++++ b/test/jobs.test.js
+@@ -5,3 +5,14 @@ test('nightly revokes expired tokens without deleting them', () => {
+   nightly(new Date('2026-02-01T00:00:00Z'));
+   assert.strictEqual(store.tokens.length, 1); assert.ok(store.tokens[0].revokedAt);
+ });
++test('nightly revokes expired sessions without deleting them', () => {
++  nightly(new Date('2026-02-01T00:00:00Z'));
++  assert.strictEqual(store.sessions.length, 1); assert.ok(store.sessions[0].revokedAt);
++});
++test('retention removes tokens and sessions 90 days after expiry', () => {
++  const { retention } = require('../src/jobs/retention');
++  retention(new Date('2026-03-01T00:00:00Z'));
++  assert.strictEqual(store.sessions.length, 1);
++  retention(new Date('2026-04-02T00:00:00Z'));
++  assert.strictEqual(store.tokens.length, 0); assert.strictEqual(store.sessions.length, 0);
++});

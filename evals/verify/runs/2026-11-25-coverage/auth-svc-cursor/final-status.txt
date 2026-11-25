@@ -1,0 +1,2 @@
+ M src/auth.js
+ M test/auth.test.js

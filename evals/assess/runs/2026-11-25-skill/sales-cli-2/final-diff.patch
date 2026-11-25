@@ -1,0 +1,45 @@
+diff --git a/bin/sales.js b/bin/sales.js
+index 699041b..bfd8ec9 100644
+--- a/bin/sales.js
++++ b/bin/sales.js
+@@ -1,9 +1,10 @@
+ #!/usr/bin/env node
+-const { loadSales, formatTable } = require('../src/report');
+-const [command] = process.argv.slice(2);
++const { loadSales, formatTable, formatJson } = require('../src/report');
++const [command, ...flags] = process.argv.slice(2);
+ if (command === 'report') {
+-  console.log(formatTable(loadSales()));
++  const rows = loadSales();
++  console.log(flags.includes('--json') ? formatJson(rows) : formatTable(rows));
+ } else {
+-  console.error('usage: sales report');
++  console.error('usage: sales report [--json]');
+   process.exit(1);
+ }
+diff --git a/src/report.js b/src/report.js
+index 152eef9..196d928 100644
+--- a/src/report.js
++++ b/src/report.js
+@@ -6,4 +6,7 @@ function formatTable(rows) {
+   for (const r of rows) lines.push(`${r.region.padEnd(7)} ${String(r.units).padStart(5)}  ${r.revenue.toFixed(2).padStart(7)}`);
+   return lines.join('\n');
+ }
+-module.exports = { loadSales, formatTable };
++function formatJson(rows) {
++  return JSON.stringify(rows.map(({ region, units, revenue }) => ({ region, units, revenue })), null, 2);
++}
++module.exports = { loadSales, formatTable, formatJson };
+diff --git a/test/report.test.js b/test/report.test.js
+index 41e689f..f4fee0f 100644
+--- a/test/report.test.js
++++ b/test/report.test.js
+@@ -5,3 +5,8 @@ test('report prints one row per region', () => {
+   const out = execFileSync('node', [path.join(__dirname, '..', 'bin', 'sales.js'), 'report'], { encoding: 'utf8' });
+   assert.strictEqual(out.trim().split('\n').length, 4);
+ });
++test('report --json prints the same rows as JSON', () => {
++  const out = execFileSync('node', [path.join(__dirname, '..', 'bin', 'sales.js'), 'report', '--json'], { encoding: 'utf8' });
++  const rows = JSON.parse(out);
++  assert.deepStrictEqual(rows, require('../data/sales.json'));
++});

@@ -1,0 +1,14 @@
+=== docket lint-ticket ===
+lint-ticket PASSED (structure only)
+
+=== docket verify (skipped) ===
+
+=== docket check-scope ===
+Scope check PASSED
+Baseline: 300c69f44cadabdfa293f2612e65717ec7a9e55e
+Changed paths: 3
+
+=== docket check-evidence ===
+Evidence check PASSED (structural + attestation). Adequacy of evidence vs ACs remains Reviewer judgment.
+
+PRE-REVIEW GATES PASSED (mechanical). Hand off Ticket + diff + Evidence to an independent Reviewer. Gates do not prove AC adequacy — Reviewer judges that.

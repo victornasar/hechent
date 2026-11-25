@@ -1,0 +1,26 @@
+command: node --test
+argv: ['node', '--test']
+cwd: /Users/nasarissa/verify-blind-runs/run4/duration-lib
+started: 2026-11-25T18:46:39.819641+00:00
+ended: 2026-11-25T18:46:40.200958+00:00
+ran_at: 2026-11-25T18:46:39Z
+exit: 0
+git_head: ac6d2ea793c1fb05928c56fff8bfd198f9a399d1
+tree_fingerprint: e7f4def78ff25170d4a28866044f43487406a122941c5999486eb574596d2bc9
+
+----- stdout -----
+✔ formatDuration renders milliseconds (0.446375ms)
+✔ formatDuration renders 1.5 seconds (0.0675ms)
+✔ formatDuration renders minutes and seconds (0.055125ms)
+✔ formatDuration rejects negatives (0.175583ms)
+✔ formatDuration rejects non-integers (0.372791ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.006333
+
+----- stderr -----

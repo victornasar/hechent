@@ -1,0 +1,2 @@
+src/discount.js
+test/discount.test.js

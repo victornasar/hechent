@@ -1,0 +1,23 @@
+diff --git a/src/permissions.js b/src/permissions.js
+index 8e4087c..f22c834 100644
+--- a/src/permissions.js
++++ b/src/permissions.js
+@@ -3,6 +3,7 @@ const ROLES = {
+   admin:      { view: true,  edit: true },
+   accountant: { view: true,  edit: true },
+   viewer:     { view: true,  edit: false },
++  support:    { view: true,  edit: false },
+ };
+ function canView(role) { return Boolean(ROLES[role] && ROLES[role].view); }
+ function canEdit(role) { return Boolean(ROLES[role] && ROLES[role].edit); }
+diff --git a/test/permissions.test.js b/test/permissions.test.js
+index 767e80d..dd614cb 100644
+--- a/test/permissions.test.js
++++ b/test/permissions.test.js
+@@ -1,5 +1,6 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { canView, canEdit } = require('../src/permissions');
+ test('viewer can view but not edit', () => { assert.ok(canView('viewer')); assert.ok(!canEdit('viewer')); });
++test('support can view but not edit', () => { assert.ok(canView('support')); assert.ok(!canEdit('support')); });
+ test('accountant can edit', () => assert.ok(canEdit('accountant')));
+ test('unknown role has no access', () => { assert.ok(!canView('guest')); assert.ok(!canEdit('guest')); });

@@ -1,0 +1,40 @@
+diff --git a/src/jobs/nightly.js b/src/jobs/nightly.js
+index e3b4362..25675d4 100644
+--- a/src/jobs/nightly.js
++++ b/src/jobs/nightly.js
+@@ -1,6 +1,10 @@
+-// Nightly cleanup. Expired tokens are revoked (not deleted): see ADR 0004.
++// Nightly cleanup. Expired tokens and sessions are revoked (not deleted): see ADR 0004.
+ const { store } = require('../store');
++function revokeExpired(records, now) {
++  for (const r of records) if (!r.revokedAt && new Date(r.expiresAt) < now) r.revokedAt = now.toISOString();
++}
+ function nightly(now = new Date()) {
+-  for (const t of store.tokens) if (!t.revokedAt && new Date(t.expiresAt) < now) t.revokedAt = now.toISOString();
++  revokeExpired(store.tokens, now);
++  revokeExpired(store.sessions, now);
+ }
+ module.exports = { nightly };
+diff --git a/src/store.js b/src/store.js
+index 0958d80..90608af 100644
+--- a/src/store.js
++++ b/src/store.js
+@@ -1,5 +1,5 @@
+ const store = {
+   tokens: [{ id: 't1', expiresAt: '2026-01-01T00:00:00Z', revokedAt: null }],
+-  sessions: [{ id: 's1', userId: 'u1', expiresAt: '2026-01-01T00:00:00Z' }],
++  sessions: [{ id: 's1', userId: 'u1', expiresAt: '2026-01-01T00:00:00Z', revokedAt: null }],
+ };
+ module.exports = { store };
+diff --git a/test/jobs.test.js b/test/jobs.test.js
+index fe181e9..0144b35 100644
+--- a/test/jobs.test.js
++++ b/test/jobs.test.js
+@@ -5,3 +5,7 @@ test('nightly revokes expired tokens without deleting them', () => {
+   nightly(new Date('2026-02-01T00:00:00Z'));
+   assert.strictEqual(store.tokens.length, 1); assert.ok(store.tokens[0].revokedAt);
+ });
++test('nightly revokes expired sessions without deleting them', () => {
++  nightly(new Date('2026-02-01T00:00:00Z'));
++  assert.strictEqual(store.sessions.length, 1); assert.ok(store.sessions[0].revokedAt);
++});

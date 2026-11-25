@@ -1,0 +1,71 @@
+diff --git a/export/ledger.js b/export/ledger.js
+index da71e44..8407b7a 100644
+--- a/export/ledger.js
++++ b/export/ledger.js
+@@ -1,12 +1,15 @@
+ // Daily ledger export, imported by the accountant's bookkeeping software.
+ // The column layout is fixed by that software's import format: DO NOT CHANGE IT.
+ // One row per order line, then one VAT row per order.
+-const { RATE } = require('../src/tax');
++// Line net_cents are after the line's share of any order discount, so they sum to the
++// discounted subtotal that VAT is charged on.
++const { tax } = require('../src/tax');
++const { lineDiscounts } = require('../src/discount');
+ const COLUMNS = ['date', 'order_id', 'account', 'description', 'net_cents', 'vat_cents'];
+ function ledgerRows(order, date) {
+-  const rows = order.lines.map((l) => [date, order.id, 'SALES', l.sku, l.unitCents * l.qty, 0]);
+-  const net = rows.reduce((s, r) => s + r[4], 0);
+-  rows.push([date, order.id, 'VAT', 'VAT', 0, Math.round(net * RATE)]);
++  const disc = lineDiscounts(order);
++  const rows = order.lines.map((l, i) => [date, order.id, 'SALES', l.sku, l.unitCents * l.qty - disc[i], 0]);
++  rows.push([date, order.id, 'VAT', 'VAT', 0, tax(order)]);
+   return rows;
+ }
+ function toCsv(rows) { return [COLUMNS.join(','), ...rows.map((r) => r.join(','))].join('\n'); }
+diff --git a/src/invoice.js b/src/invoice.js
+index 27f7ce8..d244571 100644
+--- a/src/invoice.js
++++ b/src/invoice.js
+@@ -1,8 +1,9 @@
+ const { subtotal } = require('./order');
+ const { tax } = require('./tax');
++const { discount } = require('./discount');
+ // Invoices are legal documents: each line shown here must reconcile with the totals.
+ function invoice(order) {
+-  const sub = subtotal(order); const t = tax(order);
+-  return { lines: order.lines, subtotalCents: sub, taxCents: t, totalCents: sub + t };
++  const sub = subtotal(order); const d = discount(order); const t = tax(order);
++  return { lines: order.lines, subtotalCents: sub, discountCents: d, taxCents: t, totalCents: sub - d + t };
+ }
+ module.exports = { invoice };
+diff --git a/src/refund.js b/src/refund.js
+index c45a005..1c3e4cd 100644
+--- a/src/refund.js
++++ b/src/refund.js
+@@ -1,9 +1,12 @@
+ const { RATE } = require('./tax');
+-// Refund one order line: the line's price plus the VAT charged on it.
++const { lineDiscounts } = require('./discount');
++// Refund part of one order line: the line's price less its prorated share of the order
++// discount, plus the VAT charged on that discounted amount.
+ function refundLine(order, lineIndex, qty) {
+   const line = order.lines[lineIndex];
+   if (qty > line.qty) throw new Error('cannot refund more than was bought');
+-  const net = line.unitCents * qty;
++  const lineDiscount = Math.round(lineDiscounts(order)[lineIndex] * qty / line.qty);
++  const net = line.unitCents * qty - lineDiscount;
+   return net + Math.round(net * RATE);
+ }
+ module.exports = { refundLine };
+diff --git a/src/tax.js b/src/tax.js
+index d105c61..a77c6f5 100644
+--- a/src/tax.js
++++ b/src/tax.js
+@@ -1,4 +1,5 @@
+ const { subtotal } = require('./order');
+-const RATE = 0.2; // VAT, charged on the order subtotal
+-function tax(order) { return Math.round(subtotal(order) * RATE); }
++const { discount } = require('./discount');
++const RATE = 0.2; // VAT, charged on the order subtotal after discount
++function tax(order) { return Math.round((subtotal(order) - discount(order)) * RATE); }
+ module.exports = { tax, RATE };

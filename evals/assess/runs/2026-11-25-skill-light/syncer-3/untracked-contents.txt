@@ -1,0 +1,52 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add `--dry-run` flag to the sync command
+
+**Status:** draft
+**Owner (Implementer):**
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always writes to the target. You can't see which files it would copy without letting it copy them. Copies overwrite older target files, so a preview is the only safe way to check first.
+
+## Approach
+
+1. `src/sync.js`: add an options argument, `sync(source, target, log = console.log, { dryRun = false } = {})`. When `dryRun` is true, skip `fs.mkdirSync` and `fs.copyFileSync` but run the same missing/older checks. Log `would copy <name>` instead of `copied <name>` and return the same list of names. If the target does not exist yet, treat every source file as missing, and don't create the directory. Existing callers keep working because the new argument is optional.
+2. `bin/sync.js`: take `--dry-run` out of the arguments before reading `<command> <source> <target>`, so the flag can go anywhere. Pass `{ dryRun }` to `sync`. On a dry run, the summary line reads `<n> file(s) would be copied`. Add `[--dry-run]` to the usage message.
+3. `test/sync.test.js`: add tests for a dry run against an existing target (files are listed, the target is unchanged) and against a missing target (the directory is not created).
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `sync(src, dst, log, { dryRun: true })` returns the names a real sync would copy, and the contents and mtimes of `dst` are unchanged afterwards (test)
+- [ ] AC-2: A dry run against a target that does not exist returns every source file and does not create the target directory (test)
+- [ ] AC-3: `node bin/sync.js sync <src> <dst> --dry-run` prints `would copy <name>` for each file and `<n> file(s) would be copied`, exits 0, and writes nothing to `<dst>` (command)
+- [ ] AC-4: Without `--dry-run`, behaviour and output are unchanged, and the existing test passes (test)
+- [ ] AC-5: `node --test` passes (project verify)
+
+## Rollback plan
+
+Revert the commit. This is a code-only change with no data, dependency, or config impact.
+
+## Rules check
+
+No BLOCK actions. No CONFIRM actions are expected: no new dependencies, no deletions outside scratch temp dirs, no CI/env changes. Work happens on a feature branch, not `main`.
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+## Notes for the Reviewer
+
+Decisions made while planning (all cheap to change, so please confirm or adjust at approval):
+- The flag can go anywhere in the arguments, not just at the end.
+- Dry-run output uses the wording "would copy" so it can't be mistaken for a real run.
+- A dry run doesn't create a missing target directory.

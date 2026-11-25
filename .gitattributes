@@ -1,0 +1,2 @@
+# Captured agent-run artifacts are kept verbatim; exempt them from whitespace checks.
+evals/*/runs/** -whitespace

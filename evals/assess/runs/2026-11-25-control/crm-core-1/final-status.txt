@@ -1,0 +1,9 @@
+ M src/accounts.js
+ M src/contacts.js
+ M src/deals.js
+ M src/invoices.js
+ M src/notes.js
+ M src/reports.js
+ M src/search.js
+ M src/tasks.js
+ M test/modules.test.js

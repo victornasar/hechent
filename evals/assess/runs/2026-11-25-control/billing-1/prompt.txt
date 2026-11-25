@@ -1,0 +1,1 @@
+Let support staff view all invoices, but not edit them. The role is `support`.

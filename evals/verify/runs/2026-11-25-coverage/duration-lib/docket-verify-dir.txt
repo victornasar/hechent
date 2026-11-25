@@ -1,0 +1,6 @@
+total 24
+drwxr-xr-x@ 5 nasarissa  staff  160 Nov 25 10:46 .
+drwxr-xr-x@ 3 nasarissa  staff   96 Nov 25 10:46 ..
+-rw-r--r--@ 1 nasarissa  staff  517 Nov 25 10:46 002-format-duration-20261125T184639Z.json
+-rw-r--r--@ 1 nasarissa  staff  778 Nov 25 10:46 002-format-duration-20261125T184639Z.log
+-rw-r--r--@ 1 nasarissa  staff  517 Nov 25 10:46 latest.json

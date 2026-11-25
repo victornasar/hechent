@@ -1,0 +1,8 @@
+auth-api	rate-limit	Add rate limiting to the login endpoint. Let's settle the details before you build.	
+projects	archive	Add an archive action for projects. Let's agree on the details first.	
+invoicing	csv-export	Add CSV export for invoices. Let's agree on the details first.	
+billing	installments	Let customers pay invoices in installments. Let's agree on the details first.	Customers choose 2, 3, or 4 equal installments.
+auth-core	cleanup	Make the nightly cleanup job also delete expired sessions, like it does for expired tokens.	
+shop	shop	Add a discount field to orders. Let's agree on the details first.	Percentage discounts, applied before VAT.
+orders-db	legacy-table	Remove the unused legacy_orders table, it's dead.	Just decide. Do whatever makes sense.
+ledger-shop	shop-ledger	Implement the discount as we agreed: percentage, applied before VAT, refunds prorate the discount.	

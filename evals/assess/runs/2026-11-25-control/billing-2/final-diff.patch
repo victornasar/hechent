@@ -1,0 +1,29 @@
+diff --git a/src/permissions.js b/src/permissions.js
+index 8e4087c..f22c834 100644
+--- a/src/permissions.js
++++ b/src/permissions.js
+@@ -3,6 +3,7 @@ const ROLES = {
+   admin:      { view: true,  edit: true },
+   accountant: { view: true,  edit: true },
+   viewer:     { view: true,  edit: false },
++  support:    { view: true,  edit: false },
+ };
+ function canView(role) { return Boolean(ROLES[role] && ROLES[role].view); }
+ function canEdit(role) { return Boolean(ROLES[role] && ROLES[role].edit); }
+diff --git a/test/permissions.test.js b/test/permissions.test.js
+index 767e80d..7a426f6 100644
+--- a/test/permissions.test.js
++++ b/test/permissions.test.js
+@@ -3,3 +3,12 @@ const { canView, canEdit } = require('../src/permissions');
+ test('viewer can view but not edit', () => { assert.ok(canView('viewer')); assert.ok(!canEdit('viewer')); });
+ test('accountant can edit', () => assert.ok(canEdit('accountant')));
+ test('unknown role has no access', () => { assert.ok(!canView('guest')); assert.ok(!canEdit('guest')); });
++test('support can view but not edit', () => { assert.ok(canView('support')); assert.ok(!canEdit('support')); });
++test('support can list and read invoices but not update or delete', () => {
++  const inv = require('../src/invoices'); const user = { role: 'support' };
++  assert.strictEqual(inv.listInvoices(user).length, 2);
++  assert.strictEqual(inv.getInvoice(user, 'inv-1').id, 'inv-1');
++  assert.throws(() => inv.updateInvoice(user, 'inv-1', { amount: 0 }), /forbidden/);
++  assert.throws(() => inv.deleteInvoice(user, 'inv-1'), /forbidden/);
++  assert.strictEqual(inv.getInvoice(user, 'inv-1').amount, 120);
++});

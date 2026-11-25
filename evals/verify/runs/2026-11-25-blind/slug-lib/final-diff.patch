@@ -1,0 +1,21 @@
+diff --git a/src/slug.js b/src/slug.js
+index 29b8535..08dfb79 100644
+--- a/src/slug.js
++++ b/src/slug.js
+@@ -1,2 +1,4 @@
+-function slugify(s) { return s.toLowerCase().replace(/ /g, '-'); }
++function slugify(s) {
++  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
++}
+ module.exports = { slugify };
+diff --git a/test/slug.test.js b/test/slug.test.js
+index d8c9475..d2cdd7a 100644
+--- a/test/slug.test.js
++++ b/test/slug.test.js
+@@ -1,3 +1,6 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { slugify } = require('../src/slug');
+ test('slugify lowercases and hyphenates', () => assert.strictEqual(slugify('Hello World'), 'hello-world'));
++test('slugify drops punctuation and collapses repeated spaces', () => assert.strictEqual(slugify('Hello,  World!'), 'hello-world'));
++test('slugify trims leading/trailing separators', () => assert.strictEqual(slugify('  --Hello World--  '), 'hello-world'));
++test('slugify keeps digits', () => assert.strictEqual(slugify('Top 10 Tips'), 'top-10-tips'));

@@ -1,0 +1,59 @@
+=== CONTRIBUTING.md
+# Contributing to notes-lib
+
+Thanks for helping out. This is a small library, and this guide is meant to keep it that way.
+
+## Setup
+
+You only need a recent version of [Node.js](https://nodejs.org/). The tests use the built-in `node:test` runner, so they need Node 18 or newer. There are no dependencies to install.
+
+```sh
+git clone <repo-url>
+cd notes-lib
+npm test
+```
+
+## Project layout
+
+```
+src/notes.js         library code (CommonJS, exports createNote)
+test/notes.test.js   tests, run with node:test
+```
+
+## Making changes
+
+1. Branch off `main`.
+2. Keep each change small and focused on one thing.
+3. Add or update tests in `test/` for any change in behavior. Bug fixes should come with a test that fails without the fix.
+4. Run `npm test` and make sure everything passes.
+5. If you change how notes behave (for example, which fields a note has or what counts as valid input), update `README.md` to match.
+
+## Code style
+
+- Write plain CommonJS (`require` / `module.exports`). There is no build step and no transpiler.
+- Don't add runtime dependencies without discussing it first. The library has none today.
+- Follow the style of the code around you: 2-space indentation, single quotes, semicolons.
+- Throw `Error` with a short, lowercase message for invalid input (for example, `'title required'`).
+
+## Tests
+
+- Tests go in `test/*.test.js`. `node --test` finds them automatically.
+- Use `node:test` and `node:assert`. Don't add a test framework.
+- Keep tests deterministic. For example, `createdAt` is a fixed timestamp right now, so tests can compare it exactly. If you change that, make sure the tests still don't depend on the real clock.
+
+## Commit messages
+
+Use short, imperative messages with a [Conventional Commits](https://www.conventionalcommits.org/)-style prefix, matching the existing history:
+
+```
+feat: add tags to notes
+fix: reject whitespace-only titles
+docs: describe notes
+test: cover empty body
+```
+
+## Pull requests
+
+- Explain what changed and why.
+- Make sure `npm test` passes.
+- Link the issue if there is one.

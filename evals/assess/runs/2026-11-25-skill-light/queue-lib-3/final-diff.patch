@@ -1,0 +1,13 @@
+diff --git a/README.md b/README.md
+index 6b7c6ac..38de223 100644
+--- a/README.md
++++ b/README.md
+@@ -4,7 +4,7 @@ A minimal FIFO queue.
+ 
+ ## Usage
+ 
+-Consumers recieve items in the order they were pushed:
++Consumers receive items in the order they were pushed:
+ 
+ ```js
+ const { Queue } = require('./src/queue');

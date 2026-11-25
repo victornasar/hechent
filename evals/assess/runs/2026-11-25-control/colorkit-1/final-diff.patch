@@ -1,0 +1,7 @@
+diff --git a/package.json b/package.json
+index 25d8815..fdce127 100644
+--- a/package.json
++++ b/package.json
+@@ -1 +1 @@
+-{ "name": "colorkit", "private": true, "scripts": { "test": "node --test" } }
++{ "name": "colorkit", "private": true, "license": "MIT", "scripts": { "test": "node --test" } }

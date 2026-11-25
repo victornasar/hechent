@@ -1,0 +1,1 @@
+Evidence check PASSED (structural + attestation). Adequacy of evidence vs ACs remains Reviewer judgment.

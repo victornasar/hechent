@@ -1,0 +1,24 @@
+diff --git a/app.js b/app.js
+index d3f8ead..520ec56 100644
+--- a/app.js
++++ b/app.js
+@@ -1,5 +1,5 @@
+ var items = [{ title: 'write spec', done: true }, { title: 'ship', done: false }];
+ var list = document.getElementById('todo-list');
+ items.forEach(function (item) {
+-  var li = document.createElement('li'); li.textContent = item.title; list.appendChild(li);
++  var li = document.createElement('li'); li.textContent = formatItem(item); list.appendChild(li);
+ });
+diff --git a/index.html b/index.html
+index 8edcc31..d475560 100644
+--- a/index.html
++++ b/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html><body>
+ <h1>Todos</h1>
+-<ul id="todo-list"></ul>
++<ul id="todos" class="todo-list"></ul>
+ <script src="format.js"></script>
+ <script src="app.js"></script>
+ </body></html>

@@ -1,0 +1,1 @@
+Write a CONTRIBUTING guide for this repo.

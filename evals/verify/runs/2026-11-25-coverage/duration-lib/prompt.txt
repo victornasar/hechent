@@ -1,0 +1,1 @@
+Implementation for tickets/002-format-duration.md is finished. Do Self-review and hand it to Review.

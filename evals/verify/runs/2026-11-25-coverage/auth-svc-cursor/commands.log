@@ -1,0 +1,15 @@
+# auth-svc verification (Cursor agent), 2026-11-25. All run in /Users/nasarissa/verify-blind-runs/run4/auth-svc unless noted.
+1. ls -la; find . -path ./.git -prune -o -type f -print; git status; git log --oneline -10    -> exit 0
+2. git diff; cat package.json src/auth.js src/routes.js test/auth.test.js                    -> exit 0
+3. git status --short; git diff | shasum (96e80c0389209c85911fd66694c4b872a560adc7); git rev-parse --short HEAD (d8f4670); node --version (v26.13.1); ls docket  -> exit 0 overall (ls docket: not found)
+4. rg -n "canEdit|require\(" .                                                                -> exit 0
+5. npm test > /tmp/authsvc-test.log 2>&1                                                     -> exit 0 (4 pass, 0 fail)
+6. git worktree add -q --detach /tmp/authsvc-probe.mAEs/base d8f4670                          -> exit 128 (sandbox: cannot create .git/worktrees)
+7. node /tmp/authsvc-probe.mAEs/probe.js <repo>                                               -> exit 0
+8. node /tmp/authsvc-probe.mAEs/probe.js /tmp/authsvc-probe.mAEs/base                         -> exit 1 (base missing because worktree failed)
+9. git worktree remove --force /tmp/authsvc-probe.mAEs/base                                   -> exit 128 (not a worktree); rm -rf probe dir; git worktree prune; git worktree list -> exit 0
+10. mkdir <tmp>/base; git archive d8f4670 | tar -x -C <tmp>/base                              -> exit 0
+11. node <tmp>/probe.js <repo>                                                                -> exit 0 (change results)
+12. node <tmp>/probe.js <tmp>/base                                                            -> exit 0 (base results)
+13. rm -rf <tmp>; git status --short; git diff | shasum (96e80c03..., unchanged)              -> exit 0
+14. cat >> <_transcripts>/commands.log (heredoc)                                              -> exit 1 (sandbox: operation not permitted; log written with file tool instead)

@@ -1,0 +1,14 @@
+=== docket lint-ticket ===
+lint-ticket PASSED (structure only)
+
+=== docket verify (skipped) ===
+
+=== docket check-scope ===
+Scope check PASSED
+Baseline: c01d0cb49cf302c43cde931034a626ecdc718de7
+Changed paths: 3
+
+=== docket check-evidence ===
+FAIL: Attestation file not found: .docket/verify/stale-attestation.json
+
+BLOCKED: check-evidence failed. If Project verify is stale/empty, copy the verify attestation block into the Ticket, fill every AC Evidence row, then re-run: docket pre-review <ticket> --audit … (or --skip-verify if attestation is already fresh). Do not hand off to Review.

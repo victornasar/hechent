@@ -1,0 +1,1 @@
+Editors should be able to edit any document. I've made the change; verify it.

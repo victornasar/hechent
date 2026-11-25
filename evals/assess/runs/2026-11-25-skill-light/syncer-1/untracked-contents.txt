@@ -1,0 +1,98 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add --dry-run flag to sync command
+
+**Status:** draft
+**Owner (Implementer):** agent
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always writes to the target. There is no
+way to see in advance which files a sync would copy without actually
+copying them.
+
+## Approach
+
+1. `src/sync.js`: add an optional 4th parameter `options = {}` to
+   `sync(source, target, log, options)`. When `options.dryRun` is true:
+   - do not call `fs.mkdirSync(target)` (a target that doesn't exist yet is
+     treated as empty, so every source file is reported);
+   - do not call `fs.copyFileSync`;
+   - log `would copy <name>` instead of `copied <name>`;
+   - still return the names that would be copied, using the same
+     missing-or-older rule as a real sync.
+   With no `options` argument, behavior stays exactly as it is now.
+2. `bin/sync.js`: take `--dry-run` out of the argument list before reading
+   the positional args, so the flag works anywhere after the program name
+   (`syncer sync --dry-run a b` or `syncer sync a b --dry-run`). Pass
+   `{ dryRun: true }` to `sync`. Print `N file(s) would be copied` instead
+   of `N file(s) copied`. Update the usage line to
+   `usage: syncer sync [--dry-run] <source> <target>`.
+3. `test/sync.test.js`: add tests for dry-run behavior.
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: With `{ dryRun: true }`, `sync` returns the names of files that are missing from the target or older there, and leaves the target unchanged: no files are created or overwritten, and their mtimes stay the same. (test)
+- [ ] AC-2: With `{ dryRun: true }` and a target directory that doesn't exist, `sync` returns every source file and does not create the target directory. (test)
+- [ ] AC-3: With `{ dryRun: true }`, `sync` logs `would copy <name>` once for each file it reports. (test)
+- [ ] AC-4: Calling `sync` without options behaves as before, and the existing test still passes. (test)
+- [ ] AC-5: Running `node bin/sync.js sync --dry-run <src> <dst>` prints `would copy …` lines and `N file(s) would be copied`, exits 0, and leaves `<dst>` unchanged. The flag also works after the positional args. (command)
+- [ ] AC-6: `node --test` passes. (command, via `docket verify`)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+No BLOCK or CONFIRM actions. No new dependencies. Work goes on a feature
+branch, not `main`.
+
+## Evidence
+
+### Project verify
+
+```text
+command:
+exit:
+log:
+ran_at:
+git_head:
+tree_fingerprint:
+attestation:
+```
+
+### Acceptance criteria
+
+```text
+id: AC-1
+criterion:
+method:
+how:
+result:
+evidence:
+```
+
+### Scope review
+
+```text
+diff_vs_files_touched:
+extras:
+justified:
+notes:
+```
+
+## Notes for the Reviewer
+
+Choices made without asking the user, all cheap to change:
+the output wording (`would copy`), accepting the flag in any position, and
+not creating the target directory during a dry run.

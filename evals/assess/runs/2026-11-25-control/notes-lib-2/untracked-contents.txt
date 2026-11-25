@@ -1,0 +1,59 @@
+=== CONTRIBUTING.md
+# Contributing to notes-lib
+
+Thanks for helping out. This is a small library, and these notes are meant to keep it that way.
+
+## Setup
+
+You need a recent version of Node.js with the built-in test runner (`node --test`, Node 18+). The project has no dependencies, so there's nothing to install.
+
+```sh
+git clone <repo-url>
+cd notes-lib
+npm test
+```
+
+## Project layout
+
+```
+src/notes.js         library code (CommonJS, exports createNote)
+test/notes.test.js   tests, using node:test and node:assert
+```
+
+## Making changes
+
+1. Branch off `main`.
+2. Keep changes small and focused. One concern per pull request.
+3. Add or update tests in `test/` for any change in behavior. Tests use `node:test` and `node:assert`. Please don't add a test framework.
+4. Run `npm test` and make sure every test passes before you open a pull request.
+5. If you change the public API or how a note is shaped (`title`, `body`, `createdAt`), update `README.md` too.
+
+## Code style
+
+- Use CommonJS (`require` / `module.exports`), as the existing code does.
+- Don't add runtime dependencies without discussing it in an issue first.
+- Validate input and throw an `Error` with a short, clear message, the way `createNote` does with `'title required'`.
+- Keep functions small and side-effect free where you can.
+
+## Commit messages
+
+Use short, imperative messages with a type prefix, for example:
+
+```
+docs: describe notes
+fix: reject whitespace-only titles
+feat: add updateNote helper
+test: cover empty body default
+```
+
+Common prefixes: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`.
+
+## Pull requests
+
+- Say what changed and why.
+- Link any related issue.
+- Confirm that `npm test` passes.
+
+## Reporting bugs
+
+Open an issue with a minimal snippet that reproduces the bug, what you expected, what happened, and your Node.js version.

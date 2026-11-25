@@ -1,0 +1,116 @@
+diff --git a/src/auth.js b/src/auth.js
+index d13c65c..3b4f7e0 100644
+--- a/src/auth.js
++++ b/src/auth.js
+@@ -1,5 +1,6 @@
+ const { db } = require('./db');
+-// Sessions map a token to a user. There is no notion of organization.
+-const sessions = new Map([['tok-ana', 'u1'], ['tok-ben', 'u2']]);
++// Sessions map a token to a user. The tenant (orgId) is always derived from the
++// user record on the server — never from anything the client sends.
++const sessions = new Map([['tok-ana', 'u1'], ['tok-ben', 'u2'], ['tok-cleo', 'u3']]);
+ function currentUser(token) { const id = sessions.get(token); return db.users.find((u) => u.id === id) || null; }
+ module.exports = { currentUser };
+diff --git a/src/db.js b/src/db.js
+index 6940238..8a1e807 100644
+--- a/src/db.js
++++ b/src/db.js
+@@ -1,7 +1,20 @@
+ // Single in-memory database shared by the whole app.
++// Every tenant-owned row carries an orgId. Tasks inherit their org from their project.
+ const db = {
+-  users: [{ id: 'u1', email: 'ana@example.com', admin: true }, { id: 'u2', email: 'ben@example.com', admin: false }],
+-  projects: [{ id: 'p1', name: 'Website', ownerId: 'u1' }, { id: 'p2', name: 'Mobile', ownerId: 'u2' }],
+-  tasks: [{ id: 't1', projectId: 'p1', title: 'Launch' }],
++  orgs: [{ id: 'o1', name: 'Acme' }, { id: 'o2', name: 'Globex' }],
++  users: [
++    { id: 'u1', orgId: 'o1', email: 'ana@example.com', admin: true },
++    { id: 'u2', orgId: 'o1', email: 'ben@example.com', admin: false },
++    { id: 'u3', orgId: 'o2', email: 'cleo@globex.example', admin: true },
++  ],
++  projects: [
++    { id: 'p1', orgId: 'o1', name: 'Website', ownerId: 'u1' },
++    { id: 'p2', orgId: 'o1', name: 'Mobile', ownerId: 'u2' },
++    { id: 'p3', orgId: 'o2', name: 'Website Redesign', ownerId: 'u3' },
++  ],
++  tasks: [
++    { id: 't1', projectId: 'p1', title: 'Launch' },
++    { id: 't2', projectId: 'p3', title: 'Secret roadmap' },
++  ],
+ };
+ module.exports = { db };
+diff --git a/src/routes.js b/src/routes.js
+index 5ad2732..1db2b7a 100644
+--- a/src/routes.js
++++ b/src/routes.js
+@@ -1,8 +1,28 @@
+ const { db } = require('./db');
+ const { currentUser } = require('./auth');
+-// Every signed-in user sees every project: the app was built for one company.
+-function listProjects(token) { if (!currentUser(token)) return { status: 401 }; return { status: 200, body: db.projects }; }
+-function listTasks(token, projectId) { if (!currentUser(token)) return { status: 401 }; return { status: 200, body: db.tasks.filter((t) => t.projectId === projectId) }; }
+-function adminListUsers(token) { const u = currentUser(token); if (!u || !u.admin) return { status: 403 }; return { status: 200, body: db.users }; }
+-function search(token, q) { if (!currentUser(token)) return { status: 401 }; return { status: 200, body: db.projects.filter((p) => p.name.toLowerCase().includes(q)) }; }
++
++// All tenant data access goes through these helpers so a route can't forget the org filter.
++const scoped = (rows, user) => rows.filter((r) => r.orgId === user.orgId);
++const findProject = (user, id) => scoped(db.projects, user).find((p) => p.id === id) || null;
++
++function listProjects(token) {
++  const u = currentUser(token); if (!u) return { status: 401 };
++  return { status: 200, body: scoped(db.projects, u) };
++}
++function listTasks(token, projectId) {
++  const u = currentUser(token); if (!u) return { status: 401 };
++  // 404 (not 403) for other orgs' projects so we don't reveal that they exist.
++  if (!findProject(u, projectId)) return { status: 404 };
++  return { status: 200, body: db.tasks.filter((t) => t.projectId === projectId) };
++}
++// "admin" means admin of their own org, not of the whole system.
++function adminListUsers(token) {
++  const u = currentUser(token); if (!u || !u.admin) return { status: 403 };
++  return { status: 200, body: scoped(db.users, u) };
++}
++function search(token, q) {
++  const u = currentUser(token); if (!u) return { status: 401 };
++  const needle = String(q ?? '').toLowerCase();
++  return { status: 200, body: scoped(db.projects, u).filter((p) => p.name.toLowerCase().includes(needle)) };
++}
+ module.exports = { listProjects, listTasks, adminListUsers, search };
+diff --git a/test/routes.test.js b/test/routes.test.js
+index 8d2c710..1af7360 100644
+--- a/test/routes.test.js
++++ b/test/routes.test.js
+@@ -1,4 +1,31 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const r = require('../src/routes');
+-test('signed-in users see all projects', () => assert.strictEqual(r.listProjects('tok-ben').body.length, 2));
++const ids = (res) => res.body.map((x) => x.id).sort();
++
++test('signed-in users see all projects in their org', () => assert.deepStrictEqual(ids(r.listProjects('tok-ben')), ['p1', 'p2']));
+ test('admin can list users', () => assert.strictEqual(r.adminListUsers('tok-ana').status, 200));
++test('unauthenticated requests are rejected', () => {
++  assert.strictEqual(r.listProjects('nope').status, 401);
++  assert.strictEqual(r.listTasks('nope', 'p1').status, 401);
++  assert.strictEqual(r.search('nope', 'w').status, 401);
++});
++
++test('projects are isolated per org', () => {
++  assert.deepStrictEqual(ids(r.listProjects('tok-cleo')), ['p3']);
++  assert.ok(!ids(r.listProjects('tok-ana')).includes('p3'));
++});
++test('tasks of another org\'s project are not reachable', () => {
++  assert.strictEqual(r.listTasks('tok-ana', 'p3').status, 404);
++  assert.strictEqual(r.listTasks('tok-cleo', 'p1').status, 404);
++  assert.deepStrictEqual(ids(r.listTasks('tok-cleo', 'p3')), ['t2']);
++  assert.strictEqual(r.listTasks('tok-ana', 'missing').status, 404);
++});
++test('admin user list is scoped to own org', () => {
++  assert.deepStrictEqual(ids(r.adminListUsers('tok-ana')), ['u1', 'u2']);
++  assert.deepStrictEqual(ids(r.adminListUsers('tok-cleo')), ['u3']);
++  assert.strictEqual(r.adminListUsers('tok-ben').status, 403);
++});
++test('search only matches own org (and is case-insensitive)', () => {
++  assert.deepStrictEqual(ids(r.search('tok-ana', 'Website')), ['p1']);
++  assert.deepStrictEqual(ids(r.search('tok-cleo', 'website')), ['p3']);
++});

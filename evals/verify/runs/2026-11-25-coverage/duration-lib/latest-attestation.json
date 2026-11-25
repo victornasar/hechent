@@ -1,0 +1,12 @@
+{
+  "schema": "docket.verify.v1",
+  "command": "node --test",
+  "exit": 0,
+  "log": ".docket/verify/002-format-duration-20261125T184639Z.log",
+  "ran_at": "2026-11-25T18:46:39Z",
+  "git_head": "ac6d2ea793c1fb05928c56fff8bfd198f9a399d1",
+  "tree_fingerprint": "e7f4def78ff25170d4a28866044f43487406a122941c5999486eb574596d2bc9",
+  "repo": "/Users/nasarissa/verify-blind-runs/run4/duration-lib",
+  "ticket": "tickets/002-format-duration.md",
+  "attestation": ".docket/verify/002-format-duration-20261125T184639Z.json"
+}

@@ -1,0 +1,44 @@
+=== CONTRIBUTING.md
+# Contributing to notes-lib
+
+Thanks for helping out. notes-lib is a small library of helpers for creating notes, so the process is light.
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) with the built-in test runner (`node --test`), which means Node 18 or newer.
+- No dependencies to install. The package has no runtime or dev dependencies.
+
+## Project layout
+
+```
+src/notes.js         # library code (CommonJS, exports createNote)
+test/notes.test.js   # tests, using node:test and node:assert
+package.json         # the npm test script
+```
+
+## Running the tests
+
+```sh
+npm test
+```
+
+This runs `node --test`, which finds and runs the files under `test/`.
+
+## Making a change
+
+1. Branch from `main`.
+2. Keep the change small and focused on one thing.
+3. Add or update tests in `test/` for any change in behavior. Follow the existing style: one `test(...)` per behavior, named for what it checks (for example `createNote trims the title`).
+4. Run `npm test` and make sure it passes.
+5. If you change what a note contains or how it's created, update `README.md` to match.
+6. Open a pull request against `main` that describes what changed and why.
+
+## Code style
+
+- CommonJS modules (`require` / `module.exports`), matching the existing code.
+- Use only Node built-ins. Talk to the maintainers before adding a dependency.
+- Throw an `Error` with a short message for invalid input (see `createNote`'s `title required`).
+
+## Commit messages
+
+Recent commits use a short type prefix, for example `docs: describe notes`. Please do the same (`feat:`, `fix:`, `test:`, `docs:`).

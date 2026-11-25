@@ -1,0 +1,42 @@
+=== tickets/002-fix-clamp-comment-typo.md
+# Ticket: Fix typo in clamp comment
+
+**Status:** draft
+**Owner (Implementer):** Claude
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** 6620548163ef5051b3eedb626a73cb9740d3aeeb
+**Worktree:**
+
+## Problem
+
+The doc comment above `clamp` in `src/math.js` (line 1) misspells "returns" as "retruns".
+
+## Approach
+
+1. In `src/math.js` line 1, change "retruns" to "returns". No other changes.
+
+## Files touched
+
+- src/math.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `src/math.js` line 1 reads `// clamp returns x limited to the range [lo, hi].` (artifact: file contents)
+- [ ] AC-2: `git diff` touches only that comment line; code on lines 2–3 is unchanged (command: `git diff`)
+- [ ] AC-3: Project verify passes (`docket verify`)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+Nothing marked BLOCK. Comment-only change on a feature branch (not `main`). No CONFIRM steps expected.
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+## Notes for the Reviewer
+

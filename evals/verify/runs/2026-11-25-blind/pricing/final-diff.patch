@@ -1,0 +1,69 @@
+diff --git a/src/price.js b/src/price.js
+index 34af4e5..78c46f6 100644
+--- a/src/price.js
++++ b/src/price.js
+@@ -1,2 +1,6 @@
+-function total(items) { return items.reduce((sum, i) => sum + i.price * i.qty, 0); }
++function total(items, discountPct = 0) {
++  if (discountPct < 0 || discountPct > 100) throw new RangeError('discountPct out of range');
++  const gross = items.reduce((sum, i) => sum + i.price * i.qty, 0);
++  return Math.round(gross * (100 - discountPct)) / 100;
++}
+ module.exports = { total };
+diff --git a/test/price.test.js b/test/price.test.js
+index 2c7e7aa..658556e 100644
+--- a/test/price.test.js
++++ b/test/price.test.js
+@@ -1,3 +1,4 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { total } = require('../src/price');
+ test('total sums price times quantity', () => assert.strictEqual(total([{ price: 2, qty: 3 }]), 6));
++test('total applies a percentage discount', () => assert.strictEqual(total([{ price: 10, qty: 1 }], 10), 9));
+diff --git a/tickets/001-discount.md b/tickets/001-discount.md
+index e1db5f0..7a0cee6 100644
+--- a/tickets/001-discount.md
++++ b/tickets/001-discount.md
+@@ -37,4 +37,43 @@ No CONFIRM or BLOCK actions.
+ 
+ ## Evidence
+ 
++### Project verify
++
++```text
++command: node --test
++exit: 0
++log: .docket/verify/001-discount-20261125T181626Z.log
++ran_at: 2026-11-25T18:16:26Z
++git_head: fc2ece2f2b4ddbdbb3a6e04723b0e09127d4c1be
++tree_fingerprint: 7536c7192ab273cf974260ec6b708d8e2ee08c0341a70011d7b8b7e060b5f7dc
++attestation: .docket/verify/001-discount-20261125T181626Z.json
++```
++
++### Acceptance criteria
++
++```text
++id: AC-1
++criterion: total(items) without a discount returns the same values as before
++method: test
++how: node --test
++result: pass
++evidence: total sums price times quantity passed
++
++id: AC-2
++criterion: total(items, 10) returns the total reduced by 10%, rounded to cents
++method: test
++how: node --test
++result: pass
++evidence: total applies a percentage discount passed
++```
++
++### Scope review
++
++```text
++diff_vs_files_touched: match
++extras: none
++justified: n/a
++notes:
++```
++
+ ## Notes for the Reviewer

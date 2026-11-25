@@ -1,0 +1,1 @@
+Cursor Task agent used (CLI unauthenticated)

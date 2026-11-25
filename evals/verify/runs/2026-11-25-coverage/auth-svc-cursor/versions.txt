@@ -1,0 +1,4 @@
+harness: Cursor Agent via Task tool (cursor-agent CLI unauthenticated)
+cursor-agent: 2026.11.22-e9042b2
+Cursor.app: arm64
+model: claude-opus-5-5-medium (Task subagent)

@@ -1,0 +1,1 @@
+Add an archive action for projects. Let's agree on the details first.

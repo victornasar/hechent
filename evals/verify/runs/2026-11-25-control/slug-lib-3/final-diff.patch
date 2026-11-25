@@ -1,0 +1,10 @@
+diff --git a/src/slug.js b/src/slug.js
+index 29b8535..08dfb79 100644
+--- a/src/slug.js
++++ b/src/slug.js
+@@ -1,2 +1,4 @@
+-function slugify(s) { return s.toLowerCase().replace(/ /g, '-'); }
++function slugify(s) {
++  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
++}
+ module.exports = { slugify };

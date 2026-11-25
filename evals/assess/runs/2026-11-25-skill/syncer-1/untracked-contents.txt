@@ -1,0 +1,67 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add `--dry-run` flag to the sync command
+
+**Status:** draft
+**Owner (Implementer):** agent
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always writes to the target: it creates the
+target directory and copies every file that is missing there or older there.
+There is no way to see what a sync would do without doing it.
+
+## Approach
+
+1. `src/sync.js`: add an optional fourth parameter `options = {}` to
+   `sync(source, target, log, options)`. When `options.dryRun` is true:
+   - do not call `fs.mkdirSync` on the target. A missing target counts as
+     empty, so every source file is reported;
+   - do not call `fs.copyFileSync`;
+   - log `would copy <name>` in place of `copied <name>`;
+   - still return the names that would be copied, using the same
+     missing-or-older rule.
+   Calls without `options` behave exactly as they do now.
+2. `bin/sync.js`: accept `--dry-run` anywhere after the program name. Remove it
+   from the arguments before reading `command source target`, and pass
+   `{ dryRun: true }` to `sync`. The summary line becomes
+   `N file(s) would be copied` in dry-run mode. The usage message becomes
+   `usage: syncer sync [--dry-run] <source> <target>`.
+3. `test/sync.test.js`: add tests for dry-run (see ACs).
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `sync(src, dst, log, { dryRun: true })` returns the names of files missing from or older in `dst`, and leaves `dst` unchanged (no files written). (test)
+- [ ] AC-2: With `dryRun` and a `dst` that does not exist, `dst` is still absent afterwards and every source file is returned. (test)
+- [ ] AC-3: With `dryRun`, `log` receives `would copy <name>` for each returned name. (test)
+- [ ] AC-4: `sync` without `options` behaves as before: the existing test `copies files missing from the target` passes unchanged. (test)
+- [ ] AC-5: `node bin/sync.js sync --dry-run <src> <dst>` prints `would copy …` lines and `N file(s) would be copied`, exits 0, and writes nothing to `<dst>`. (command)
+- [ ] AC-6: `node --test` passes.
+
+## Rollback plan
+
+Revert the commit. The change is additive and touches no stored data.
+
+## Rules check
+
+No BLOCK actions. No dependencies added, no migrations, no deletions, no
+deploy. Commit goes on a branch, not `main`.
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+## Notes for the Reviewer
+
+Decisions I made (all cheap to reverse): dry-run skips creating the target
+directory; the flag may appear in any position; the log and summary wording is
+as written above.

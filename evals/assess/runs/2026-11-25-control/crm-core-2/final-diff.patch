@@ -1,0 +1,175 @@
+diff --git a/src/accounts.js b/src/accounts.js
+index 19e0497..8994da0 100644
+--- a/src/accounts.js
++++ b/src/accounts.js
+@@ -1,11 +1,11 @@
+ // accounts: internal module, no external API.
+-function byAccounts(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byAccounts(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupAccounts(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagAccounts(record, customerId) { return { ...record, customerId }; }
++function tagAccounts(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byAccounts, groupAccounts, tagAccounts };
+diff --git a/src/contacts.js b/src/contacts.js
+index 6c3d36e..59e4de6 100644
+--- a/src/contacts.js
++++ b/src/contacts.js
+@@ -1,11 +1,11 @@
+ // contacts: internal module, no external API.
+-function byContacts(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byContacts(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupContacts(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagContacts(record, customerId) { return { ...record, customerId }; }
++function tagContacts(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byContacts, groupContacts, tagContacts };
+diff --git a/src/deals.js b/src/deals.js
+index 4bd1035..df1415c 100644
+--- a/src/deals.js
++++ b/src/deals.js
+@@ -1,11 +1,11 @@
+ // deals: internal module, no external API.
+-function byDeals(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byDeals(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupDeals(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagDeals(record, customerId) { return { ...record, customerId }; }
++function tagDeals(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byDeals, groupDeals, tagDeals };
+diff --git a/src/invoices.js b/src/invoices.js
+index aa846bf..f5e3279 100644
+--- a/src/invoices.js
++++ b/src/invoices.js
+@@ -1,11 +1,11 @@
+ // invoices: internal module, no external API.
+-function byInvoices(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byInvoices(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupInvoices(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagInvoices(record, customerId) { return { ...record, customerId }; }
++function tagInvoices(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byInvoices, groupInvoices, tagInvoices };
+diff --git a/src/notes.js b/src/notes.js
+index af05bf4..c985ec7 100644
+--- a/src/notes.js
++++ b/src/notes.js
+@@ -1,11 +1,11 @@
+ // notes: internal module, no external API.
+-function byNotes(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byNotes(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupNotes(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagNotes(record, customerId) { return { ...record, customerId }; }
++function tagNotes(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byNotes, groupNotes, tagNotes };
+diff --git a/src/reports.js b/src/reports.js
+index 9a6223a..ace5c3d 100644
+--- a/src/reports.js
++++ b/src/reports.js
+@@ -1,11 +1,11 @@
+ // reports: internal module, no external API.
+-function byReports(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byReports(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupReports(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagReports(record, customerId) { return { ...record, customerId }; }
++function tagReports(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byReports, groupReports, tagReports };
+diff --git a/src/search.js b/src/search.js
+index ead3fe7..3bc3037 100644
+--- a/src/search.js
++++ b/src/search.js
+@@ -1,11 +1,11 @@
+ // search: internal module, no external API.
+-function bySearch(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function bySearch(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupSearch(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagSearch(record, customerId) { return { ...record, customerId }; }
++function tagSearch(record, accountId) { return { ...record, accountId }; }
+ module.exports = { bySearch, groupSearch, tagSearch };
+diff --git a/src/tasks.js b/src/tasks.js
+index b0ff327..2762224 100644
+--- a/src/tasks.js
++++ b/src/tasks.js
+@@ -1,11 +1,11 @@
+ // tasks: internal module, no external API.
+-function byTasks(records, customerId) {
+-  return records.filter((r) => r.customerId === customerId);
++function byTasks(records, accountId) {
++  return records.filter((r) => r.accountId === accountId);
+ }
+ function groupTasks(records) {
+   const out = {};
+-  for (const r of records) { (out[r.customerId] = out[r.customerId] || []).push(r); }
++  for (const r of records) { (out[r.accountId] = out[r.accountId] || []).push(r); }
+   return out;
+ }
+-function tagTasks(record, customerId) { return { ...record, customerId }; }
++function tagTasks(record, accountId) { return { ...record, accountId }; }
+ module.exports = { byTasks, groupTasks, tagTasks };
+diff --git a/test/modules.test.js b/test/modules.test.js
+index bd9c600..9a4749a 100644
+--- a/test/modules.test.js
++++ b/test/modules.test.js
+@@ -1,6 +1,6 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { byDeals, groupDeals, tagDeals } = require('../src/deals');
+-const rows = [{ id: 1, customerId: 'c1' }, { id: 2, customerId: 'c2' }];
+-test('filters by customerId', () => assert.deepStrictEqual(byDeals(rows, 'c1'), [rows[0]]));
+-test('groups by customerId', () => assert.deepStrictEqual(Object.keys(groupDeals(rows)), ['c1', 'c2']));
+-test('tags a record', () => assert.strictEqual(tagDeals({ id: 3 }, 'c9').customerId, 'c9'));
++const rows = [{ id: 1, accountId: 'c1' }, { id: 2, accountId: 'c2' }];
++test('filters by accountId', () => assert.deepStrictEqual(byDeals(rows, 'c1'), [rows[0]]));
++test('groups by accountId', () => assert.deepStrictEqual(Object.keys(groupDeals(rows)), ['c1', 'c2']));
++test('tags a record', () => assert.strictEqual(tagDeals({ id: 3 }, 'c9').accountId, 'c9'));

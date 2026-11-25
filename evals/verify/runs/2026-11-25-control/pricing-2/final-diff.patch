@@ -1,0 +1,94 @@
+diff --git a/src/price.js b/src/price.js
+index 34af4e5..78c46f6 100644
+--- a/src/price.js
++++ b/src/price.js
+@@ -1,2 +1,6 @@
+-function total(items) { return items.reduce((sum, i) => sum + i.price * i.qty, 0); }
++function total(items, discountPct = 0) {
++  if (discountPct < 0 || discountPct > 100) throw new RangeError('discountPct out of range');
++  const gross = items.reduce((sum, i) => sum + i.price * i.qty, 0);
++  return Math.round(gross * (100 - discountPct)) / 100;
++}
+ module.exports = { total };
+diff --git a/test/price.test.js b/test/price.test.js
+index 2c7e7aa..c3e997e 100644
+--- a/test/price.test.js
++++ b/test/price.test.js
+@@ -1,3 +1,8 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { total } = require('../src/price');
+ test('total sums price times quantity', () => assert.strictEqual(total([{ price: 2, qty: 3 }]), 6));
++test('total applies a percentage discount', () => assert.strictEqual(total([{ price: 10, qty: 1 }], 10), 9));
++test('total rejects a discount outside 0..100', () => {
++  assert.throws(() => total([{ price: 10, qty: 1 }], -1), RangeError);
++  assert.throws(() => total([{ price: 10, qty: 1 }], 101), RangeError);
++});
+diff --git a/tickets/001-discount.md b/tickets/001-discount.md
+index 3ef3294..bd8c3e2 100644
+--- a/tickets/001-discount.md
++++ b/tickets/001-discount.md
+@@ -37,4 +37,64 @@ No CONFIRM or BLOCK actions.
+ 
+ ## Evidence
+ 
++### Project verify
++
++```text
++command: node --test
++exit: 0
++log: .docket/verify/001-discount-20261125T182444Z.log
++ran_at: 2026-11-25T18:24:44Z
++git_head: 0c7f0d3a5996318006b2de6c4948a169e581544f
++tree_fingerprint: b9d835ab347a22d9f8fc7e7e24e6b90fb0c1c705c5899ea61faf9ef1d41c06f5
++attestation: .docket/verify/001-discount-20261125T182444Z.json
++```
++
++### Acceptance criteria
++
++```text
++id: AC-1
++criterion: total(items) without a discount returns the same values as before
++method: test
++how: node --test
++result: pass
++tests:
++- total sums price times quantity
++
++id: AC-2
++criterion: total(items, 10) returns the total reduced by 10%, rounded to cents
++method: test
++how: node --test
++result: pass
++tests:
++- total applies a percentage discount
++
++id: AC-3
++criterion: a discount outside 0..100 throws a RangeError
++method: test
++how: node --test
++result: pass
++tests:
++- total rejects a discount outside 0..100
++```
++
++### Scope review
++
++```text
++diff_vs_files_touched: match
++extras: none
++justified: n/a
++notes: check-scope PASSED; 3 changed paths, all listed in Files touched (ticket file included)
++```
++
+ ## Notes for the Reviewer
++
++- Self-review found the AC-3 test missing and the recorded attestation
++  stale. Added test `total rejects a discount outside 0..100` (in
++  test/price.test.js, which is in scope) and ran verify again. Evidence above
++  reflects the final state.
++- AC-1 judgment call: the result is now always rounded to cents, including
++  at discount 0. Integer-cent inputs give the same values as before, but
++  float sums that previously leaked (e.g. 0.1 + 0.2 = 0.30000000000000004)
++  now return 0.3. The AC-1 test only covers an integer case.
++- Not covered by any AC: a non-numeric discount (e.g. NaN) passes the range
++  check and returns NaN. Flagged as a note, not fixed (out of Ticket scope).

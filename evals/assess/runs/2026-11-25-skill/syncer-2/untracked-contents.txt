@@ -1,0 +1,96 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add --dry-run flag to sync command
+
+**Status:** draft
+**Owner (Implementer):** Claude
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always writes to the target: it creates the
+target directory and copies files. There's no way to preview which files a
+sync would copy without changing the filesystem.
+
+## Approach
+
+1. In `src/sync.js`, give `sync(source, target, log, options)` an optional
+   fourth argument `{ dryRun }` (default `false`). When `dryRun` is true, it
+   does not call `fs.mkdirSync` or `fs.copyFileSync`. It logs
+   `would copy <name>` instead of `copied <name>` and returns the same list
+   of names a real sync would copy. If the target doesn't exist, every
+   regular file in the source counts as "would copy". The default behavior
+   stays the same.
+2. In `bin/sync.js`, accept `--dry-run` anywhere in the arguments after
+   `sync`. Strip it out before reading the positional `source`/`target`. Pass
+   `{ dryRun: true }` to `sync`. Print `<n> file(s) would be copied` as the
+   summary. Update the usage line to
+   `usage: syncer sync [--dry-run] <source> <target>`.
+3. Add tests to `test/sync.test.js` for dry-run behavior.
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `sync(src, dst, log, { dryRun: true })` returns the names a real sync would copy (missing files and files that are older in the target), and leaves the target's contents and mtimes unchanged (test).
+- [ ] AC-2: With `dryRun: true` and a target directory that doesn't exist, `sync` returns every source file and doesn't create the target (test).
+- [ ] AC-3: `node bin/sync.js sync --dry-run <src> <dst>` prints `would copy <name>` lines and `<n> file(s) would be copied`, exits 0, and copies nothing (command).
+- [ ] AC-4: Without `--dry-run`, behavior and output are unchanged; the existing test still passes (test).
+- [ ] AC-5: `node --test` passes (command, via `docket verify`).
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+None of the steps needs a BLOCK or CONFIRM action. There are no dependencies,
+migrations, or deletions. The work goes on a feature branch, not `main`.
+
+## Evidence
+
+### Project verify
+
+```text
+command:
+exit:
+log:
+ran_at:
+git_head:
+tree_fingerprint:
+attestation:
+```
+
+### Acceptance criteria
+
+```text
+id: AC-1
+criterion:
+method:
+how:
+result:
+evidence:
+notes:
+```
+
+### Scope review
+
+```text
+diff_vs_files_touched:
+extras:
+justified:
+notes:
+```
+
+## Notes for the Reviewer
+
+Assumptions the Planner made, all cheap to change:
+- In dry-run mode, a missing target directory isn't created.
+- The output uses "would copy" wording.
+- `--dry-run` can go anywhere after `sync`.
