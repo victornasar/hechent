@@ -73,3 +73,7 @@ Changes to a skill need a real failure behind them: a scenario where the skill l
 python3 scripts/check.py                          # skill format and links
 python3 -m unittest discover -s scripts/tests -q  # tests for the checker
 ```
+
+## License
+
+[MIT](LICENSE)

@@ -152,6 +152,7 @@ ARCHITECTURE.md      this file
 DOCKET-INTEGRATION.md the optional handoff to Docket
 AGENTS.md            instructions for agents changing Hechent
 README.md            human entry point
+LICENSE              MIT
 docs/
   skill-authoring.md the convention every skill follows
   adr/               decisions about Hechent itself
