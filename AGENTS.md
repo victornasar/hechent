@@ -18,6 +18,8 @@ python3 -m unittest discover -s scripts/tests -q  # tests for the checker
 git diff --check                                  # whitespace
 ```
 
+When a change touches the Docket boundary, or Docket has changed, also run `python3 scripts/check_docket.py <docket-checkout>`.
+
 Run all three before reporting a change as done, and report their actual output. Python 3.9 compatible; standard library only.
 
 ## Rules for this repo

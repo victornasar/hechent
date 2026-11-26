@@ -160,6 +160,7 @@ docs/
   research/          what was learned from reference projects
 scripts/
   check.py           deterministic checks for this repo
+  check_docket.py    checks that Docket still has the surface Hechent depends on
   tests/             tests for the checks
 skills/              one folder per skill
 templates/           text Hechent installs into target repos (`agents-snippet.md`), and later artifact templates

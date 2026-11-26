@@ -7,7 +7,7 @@ How Hechent works with [Docket](https://github.com/victornasar/docket) when Dock
 
 Docket's documents are authoritative for everything Docket owns. This file says how Hechent behaves at the boundary. It does not restate Docket's rules. Where this file and Docket's current docs disagree, Docket's docs win and this file is out of date.
 
-Reviewed against Docket commit `5ea3d9e`.
+Prose reviewed against Docket commit `5f3123d`. [`scripts/check_docket.py`](scripts/check_docket.py) checks mechanically that the files, sections, fields, and commands this file relies on still exist.
 
 ## Modes
 
@@ -146,7 +146,7 @@ Docket's Ticket has no field that records the Review outcome, so `docket done` c
 
 ## What Hechent depends on
 
-Only Docket's public surface: the Ticket template and its sections, the Status values, the Evidence schema in `core/recipes/recipe-self-review.md`, the CLI commands and their exit codes, and the Project Audit's Verification section. Hechent reads these from the attached copy at run time. It does not vendor or copy them.
+Only Docket's public surface: the Ticket template and its sections, the Status values, the Evidence schema in `core/recipes/recipe-self-review.md`, the CLI commands and their exit codes, and the Project Audit's Verification section. Hechent reads these from the attached copy at run time. It does not vendor or copy them. The exact list is in `scripts/check_docket.py`; run it against a Docket checkout after Docket changes, and update this file when it fails.
 
 ## Open questions
 
