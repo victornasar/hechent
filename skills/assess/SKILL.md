@@ -44,9 +44,11 @@ Not for: questions that need only an answer; verifying finished work (use `verif
    | Decision before acting | Path B or C | Ask. No implementation until answered |
    | Confirmation before executing | An irreversible or outward-facing action: deleting data, a non-local migration, a deploy, a message to people | Investigate freely; confirm before that action |
    | Human review after acting | Level Strict | Proceed. The final report says the change needs human review, and why |
-   | Docket approval before editing | Docket attached, any file change | Draft the Ticket and stop (below) |
+   | Docket approval before editing | Docket attached, any file change | Draft the Ticket and stop, unless Docket's fast path applies (below) |
 
    With Docket attached, a request to skip the Ticket ("no ceremony", "quick one") does not waive approval: say so plainly and draft the Ticket. Creating or updating the draft Ticket is the only file write allowed before approval. Use the attached Docket's template as it is, with Status `draft`, putting each piece of information in its existing section.
+
+   **Docket's fast path.** If the attached Docket's `core/WORKFLOW.md` defines a fast path and the project's `PROJECT_AUDIT.md` turns it on, check each of its criteria as Docket states them. Only when every one clearly holds: write the Ticket with the declaration Docket requires, say in the reply that the Ticket is proceeding without approval, and continue with Docket's workflow. If any criterion is unclear, or the project hasn't turned it on, draft and stop. The fast path is Docket's exemption, not your approval, and a user's "no ceremony" doesn't create one.
 
 5. **State it and act on it.**
    - **A:** `Assess: one-shot · <level>, because <reason>` (plus any boundary), then do the work and verify it at that level. For an obvious, narrowly scoped Light change, do the Light checks yourself instead of loading `verify`: read the diff, confirm only the intended change happened, run the relevant example or link check if there is one, and report what you checked. Anything less straightforward goes through `verify`.
@@ -58,11 +60,11 @@ Not for: questions that need only an answer; verifying finished work (use `verif
 - The assessment line or block, first in the reply.
 - On A: the change, and the verification report. If the level is Strict, the report says the change needs human review.
 - On B or C: questions or decisions, and no file changes.
-- With Docket attached: one draft Ticket and no other file changes, plus a request for approval.
+- With Docket attached: one draft Ticket and no other file changes, plus a request for approval. On Docket's fast path: the Ticket with its declaration, a line saying it is proceeding without approval, and the work under Docket's workflow.
 
 ## Stop conditions
 
-- After asking (B), mapping (C), or drafting the Ticket (Docket).
+- After asking (B), mapping (C), or drafting the Ticket (Docket, unless its fast path applies).
 - Before an irreversible or outward-facing action, until confirmed.
 - When re-assessment moves the path to B or C partway through: stop editing and ask.
 
@@ -76,6 +78,6 @@ Not for: questions that need only an answer; verifying finished work (use `verif
 
 - Ask the human anything the repository answers.
 - Implement while a decision that is the user's is open, even with the assumption flagged for later confirmation.
-- Edit any file other than the draft Ticket before Docket approval, whatever the request says.
+- Edit any file other than the draft Ticket before Docket approval, whatever the request says, unless Docket's fast path clearly applies.
 - Treat Strict as a reason to stop, or leave the human-review flag out of the final report.
 - Write planning documents or ask questions on path A.

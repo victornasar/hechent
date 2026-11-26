@@ -1,0 +1,134 @@
+diff --git a/src/duration.js b/src/duration.js
+index e681fa8..0b63dd1 100644
+--- a/src/duration.js
++++ b/src/duration.js
+@@ -1,5 +1,18 @@
+ // Shared formatting helpers used by other services' log pipelines.
+ function formatDuration(ms) {
+-  return ms + 'ms';
++  if (typeof ms !== 'number' || !Number.isFinite(ms) || !Number.isInteger(ms)) {
++    throw new TypeError('ms must be a finite integer');
++  }
++  if (ms < 0) throw new RangeError('ms must be >= 0');
++  if (ms < 1000) return ms + 'ms';
++  if (ms < 60000) {
++    const tenths = Math.floor(ms / 100);
++    const whole = Math.floor(tenths / 10);
++    const frac = tenths % 10;
++    return (frac === 0 ? String(whole) : whole + '.' + frac) + 's';
++  }
++  const minutes = Math.floor(ms / 60000);
++  const seconds = Math.floor((ms % 60000) / 1000);
++  return minutes + 'm ' + seconds + 's';
+ }
+ module.exports = { formatDuration };
+diff --git a/test/duration.test.js b/test/duration.test.js
+index f109289..ab2a420 100644
+--- a/test/duration.test.js
++++ b/test/duration.test.js
+@@ -1,3 +1,7 @@
+ const test = require('node:test'); const assert = require('node:assert');
+ const { formatDuration } = require('../src/duration');
+ test('formatDuration renders milliseconds', () => assert.strictEqual(formatDuration(0), '0ms'));
++test('formatDuration renders 1.5 seconds', () => assert.strictEqual(formatDuration(1500), '1.5s'));
++test('formatDuration renders minutes and seconds', () => assert.strictEqual(formatDuration(90000), '1m 30s'));
++test('formatDuration rejects negatives', () => assert.throws(() => formatDuration(-1), RangeError));
++test('formatDuration rejects non-integers', () => assert.throws(() => formatDuration(NaN), TypeError));
+diff --git a/tickets/002-format-duration.md b/tickets/002-format-duration.md
+index 1848c13..7e7b409 100644
+--- a/tickets/002-format-duration.md
++++ b/tickets/002-format-duration.md
+@@ -1,6 +1,6 @@
+ # Ticket: Human-readable duration formatting for shared log helpers
+ 
+-**Status:** in-progress
++**Status:** in-review
+ **Owner (Implementer):** agent
+ **Retry count:** 0
+ **Related project audit:** PROJECT_AUDIT.md
+@@ -56,11 +56,11 @@ this repository.
+ ```text
+ command: node --test
+ exit: 0
+-log: .docket/verify/stale-run.log
+-ran_at: 2026-01-01T00:00:00Z
+-git_head: 0000000000000000000000000000000000000000
+-tree_fingerprint: 1111111111111111111111111111111111111111111111111111111111111111
+-attestation: .docket/verify/stale-attestation.json
++log: .docket/verify/002-format-duration-20261126T030629Z.log
++ran_at: 2026-11-26T03:06:29Z
++git_head: 0a171b6a17ce6c38b92e0f50343a7fb92c964c21
++tree_fingerprint: 03c0a4e168d0a029a568916286cc53b95da57fdc6aba4e4f029abe67e1340e7b
++attestation: .docket/verify/002-format-duration-20261126T030629Z.json
+ ```
+ 
+ ### Acceptance criteria
+@@ -69,37 +69,37 @@ attestation: .docket/verify/stale-attestation.json
+ id: AC-1
+ criterion: formatDuration(0) returns "0ms"
+ method: test
+-how: node --test
++how: docket/bin/docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-format-duration.md (runs node --test)
+ result: pass
+-evidence: formatDuration renders milliseconds passed
++evidence: test/duration.test.js "formatDuration renders milliseconds" passed (✔) in .docket/verify/002-format-duration-20261126T030629Z.log
+ 
+ id: AC-2
+ criterion: formatDuration(1500) returns "1.5s"
+ method: test
+-how: node --test
++how: docket/bin/docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-format-duration.md (runs node --test)
+ result: pass
+-evidence: formatDuration renders 1.5 seconds passed
++evidence: test/duration.test.js "formatDuration renders 1.5 seconds" passed (✔) in .docket/verify/002-format-duration-20261126T030629Z.log
+ 
+ id: AC-3
+ criterion: formatDuration(90000) returns "1m 30s"
+ method: test
+-how: node --test
++how: docket/bin/docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-format-duration.md (runs node --test)
+ result: pass
+-evidence: formatDuration renders minutes and seconds passed
++evidence: test/duration.test.js "formatDuration renders minutes and seconds" passed (✔) in .docket/verify/002-format-duration-20261126T030629Z.log
+ 
+ id: AC-4
+ criterion: formatDuration(-1) throws RangeError
+ method: test
+-how: node --test
++how: docket/bin/docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-format-duration.md (runs node --test)
+ result: pass
+-evidence: formatDuration rejects negatives passed
++evidence: test/duration.test.js "formatDuration rejects negatives" passed (✔) in .docket/verify/002-format-duration-20261126T030629Z.log
+ 
+ id: AC-5
+ criterion: formatDuration(NaN) throws TypeError
+ method: test
+-how: node --test
++how: docket/bin/docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-format-duration.md (runs node --test)
+ result: pass
+-evidence: formatDuration rejects non-integers passed
++evidence: test/duration.test.js "formatDuration rejects non-integers" passed (✔) in .docket/verify/002-format-duration-20261126T030629Z.log
+ ```
+ 
+ ### Scope review
+@@ -108,9 +108,18 @@ evidence: formatDuration rejects non-integers passed
+ diff_vs_files_touched: match
+ extras: none
+ justified: n/a
+-notes: copied from an earlier pass — regenerate before Review
++notes: diff limited to src/duration.js and test/duration.test.js
+ ```
+ 
+ ## Notes for the Reviewer
+ 
+-—
++- Breaking change to a shared export used outside this repo: every input
++  >= 1000 now renders differently (e.g. 1500 -> "1.5s", was "1500ms"), and
++  non-integer/non-number inputs that used to return strings now throw.
++  External callers could not be searched from this repo; human review of
++  downstream impact recommended.
++- Probes outside the repo (not Ticket evidence) matched the Approach at the
++  boundaries: 999->"999ms", 1000->"1s", 1099->"1s", 59999->"59.9s",
++  60000->"1m 0s", 3600000->"60m 0s"; -0 -> "0ms"; Infinity, 1.5, "1000",
++  null, undefined, 10n, new Number(5) -> TypeError.
++- Work is uncommitted on `main`; branch before committing (RULES §1).

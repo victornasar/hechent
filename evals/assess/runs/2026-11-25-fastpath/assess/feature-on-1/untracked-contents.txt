@@ -1,0 +1,91 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add --dry-run flag to the sync command
+
+**Status:** draft
+**Owner (Implementer):** agent
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always writes to the target (creates the
+directory and copies files). There is no way to preview which files a sync
+would copy without actually changing the target.
+
+## Approach
+
+1. `src/sync.js`: add an optional `options` argument, `sync(source, target, log = console.log, { dryRun = false } = {})`.
+   When `dryRun` is true, skip `fs.mkdirSync` and `fs.copyFileSync`, and log
+   `would copy <name>` instead of `copied <name>`. Selection logic (file only,
+   missing or older in target) is unchanged; the return value is still the
+   list of names that would be/were copied. A missing target directory is
+   treated as "every file is missing" (no error).
+2. `bin/sync.js`: accept `--dry-run` anywhere after `sync`
+   (`syncer sync [--dry-run] <source> <target>`), pass `{ dryRun: true }`,
+   and print `<n> file(s) would be copied` as the summary. Update the usage
+   string. Unknown flags keep producing the usage error.
+3. `test/sync.test.js`: add tests for dry-run behaviour (below).
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `sync(src, dst, log, { dryRun: true })` returns the names that a real sync would copy, and the target directory's contents are unchanged afterwards (test).
+- [ ] AC-2: With `dryRun: true` and a target directory that does not exist, the target is not created and all source files are returned (test).
+- [ ] AC-3: Without the flag, behaviour is unchanged; the existing test still passes (test).
+- [ ] AC-4: `node bin/sync.js sync --dry-run <src> <dst>` prints `would copy <name>` lines and `<n> file(s) would be copied`, exits 0, and leaves `<dst>` unchanged (command).
+- [ ] AC-5: `node --test` passes via `docket verify`.
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+No CONFIRM, BLOCK, or ESCALATE actions: no new dependencies, no CI, env,
+database, or production changes. Work happens on a feature branch, not `main`.
+Fast path not used: the change has runtime effect (criterion b fails).
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+### Project verify
+
+```text
+command:
+exit:
+log:
+ran_at:
+git_head:
+tree_fingerprint:
+attestation:
+```
+
+### Acceptance criteria
+
+```text
+id: AC-1
+criterion:
+method:
+how:
+result:
+evidence:
+```
+
+### Scope review
+
+```text
+diff_vs_files_touched:
+extras:
+justified:
+notes:
+```
+
+## Notes for the Reviewer

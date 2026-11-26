@@ -21,10 +21,11 @@ Not for: deciding the planning path or verification level (`assess`); questions 
 
 ## Procedure
 
-1. **Sort every open point into one of three lists.** Done when every point is in exactly one:
+1. **Sort every open point into one of these lists.** Done when every point is in exactly one:
    - **Settled:** fixed by the request, an earlier answer, an ADR, or established code. Never ask about these; reopen one only if step 5 applies.
-   - **Mine:** a wrong choice is cheap to change and affects nothing outside the code. This covers naming, file and module layout, internal function shape, escaping, and following an existing pattern. Decide, and list it in one line.
+   - **Mine:** a wrong choice is cheap to change and affects nothing outside the code. This covers naming, file and module layout, internal function shape, escaping, and following an existing pattern. It also covers how an agreed or settled rule is carried out when the code or a common convention already shows the way: rounding to the cent as the code already rounds, the standard way to show an agreed amount, a reminder that mirrors an existing one. Decide, and list it in one line.
    - **Theirs:** a wrong choice changes what users see or are charged, a legal or contractual obligation, permissions, data retention, or a contract with another system, and the repository does not settle it. Only these become questions.
+   - **Not in scope:** features or policies the request doesn't call for (a fee nobody mentioned, filters, extra options). Don't ask about them; note in one line that you left them out.
 
 2. **Order the questions.** If a question's options depend on the answer to another open question, hold it for a later round. Ask the prerequisite now. Done when this round contains only questions whose options do not depend on unanswered ones.
 

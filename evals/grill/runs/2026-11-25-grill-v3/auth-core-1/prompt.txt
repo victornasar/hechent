@@ -1,0 +1,1 @@
+Make the nightly cleanup job also delete expired sessions, like it does for expired tokens.

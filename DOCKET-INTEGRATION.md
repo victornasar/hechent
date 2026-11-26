@@ -71,6 +71,8 @@ Docket requires real file paths before approval. Hechent's specs avoid file path
 
 Stop and present the Ticket to the human. No code is written until the human has approved it. Questions and amendments go back into the draft. Hechent does not interpret silence, a partial answer, or an approved neighbouring Ticket as approval.
 
+The one exception is Docket's fast path (`core/WORKFLOW.md` Stage 1), which a project turns on in its Project Audit. When it is on and every criterion clearly holds, Hechent writes the declaration Docket requires in the Ticket, tells the human it is proceeding, and starts. When any criterion is unclear, it waits for approval. The fast path is Docket's exemption: Hechent never treats its own assessment as approval, and Docket's Reviewer checks the declaration.
+
 ### 3. Implement within the contract
 
 Follow Docket's workflow for starting a Ticket (clean committed state, `Baseline:` recorded, Status `in-progress`). Then Hechent's implementation procedures apply, bounded by the Ticket:
@@ -127,7 +129,7 @@ Docket's Ticket has no field that records the Review outcome, so `docket done` c
 |---|---|
 | `draft` | Yes, when proposing |
 | `approved` | No. The human approves. |
-| `in-progress` | Yes, when starting an approved Ticket |
+| `in-progress` | Yes, when starting an approved Ticket, or a fast-path Ticket per step 2 |
 | `in-review` | Yes, after `pre-review` exits 0 |
 | `send-back` | No. Docket's Reviewer decides. |
 | `done` | Only through step 6, never on its own judgment |

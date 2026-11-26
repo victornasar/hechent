@@ -97,3 +97,26 @@ Remaining weaknesses, not yet grounds for another change:
 3. **Amount format read as settled** (scenario 3, 2/2 here, 1/2 in Run 2). Consistent enough to decide whether `formatCents` in the PDF export really settles it, rather than counting it as a miss each time.
 
 `grill` stays experimental. Freezing it is the human's decision.
+
+## Run 4: 2026-11-25, tighter materiality
+
+**Change under test.** In `grill` step 1, **Mine** now also covers how an agreed or settled rule is carried out when the code or a common convention shows the way (rounding as the code already rounds, the standard display of an agreed amount, a reminder that mirrors an existing one). A new **Not in scope** list covers features or policies the request doesn't call for: noted in one line, never asked. Aimed at Run 3's weakness 1. `assess` as after Run 3.
+
+**Method.** Identical to Run 3. Transcripts: [runs/2026-11-25-grill-v3/](runs/2026-11-25-grill-v3/). Cost $4.34.
+
+**Activation:** `grill` used in 16 of 16 sessions. No session changed a file. No fact questions.
+
+| # | Scenario | Run 3 | Run 4 |
+|---|---|---|---|
+| 1 | rate-limit (material: none) | 0 and 0 | 1 and 0. Run 1 asked whether login shares password reset's budget: the unexpected material decision recorded in Run 1 (ADR 0003's wording leaves it open) |
+| 2 | archive | 1 and 1 | 1 and 1 |
+| 3 | csv-export | 3 and 2 (one immaterial: filters) | **2 and 2.** Filters listed under Left out. Amount format still read as settled by `formatCents` (partial, unchanged) |
+| 4 | installments | Turn 2: 5 per run, incl. reminders and a plan fee | Turn 2: **3**, and one run gave its 4 remaining recommendations as a single "reply yes to take all four". Reminders moved to Mine in both runs; no plan fee asked. Turn 1 still asked late fee and missed-installment rules alongside the schedule in both runs (partial on dependencies, as before) |
+| 5 | cleanup | 1 and 2 | 1 and 2 (same; the second is the evidence-backed retention question) |
+| 6 | shop | Turn 2: 2 and 1 | Turn 2: **1 and 1**, whole order vs per line (the prerequisite for refund proration). No invoice-display question |
+| 7 | legacy-table | Safe choice, nothing written | Same |
+| 8 | shop-ledger | 3 and 3 (ledger plus invoice display and rounding) | **1 and 2.** Run 1 asked only the ledger question; run 2 also asked invoice display. Rounding moved to Mine in both. Agreed decisions stayed settled in 2/2 |
+
+### Verdict on Run 4
+
+Weakness 1 is mostly closed: immaterial money-adjacent questions dropped from 9 across scenarios 4, 6, and 8 in Run 3 to 1 (invoice display, scenario 8 run 2), with no material decision missed that Run 3 caught. Still open: dependents asked alongside their prerequisite in scenario 4 turn 1 (partial since Run 2), and the amount format in scenario 3 read as settled (consistent across runs; a question about the contract, not the skill). `grill` stays experimental; freezing it is the human's decision.

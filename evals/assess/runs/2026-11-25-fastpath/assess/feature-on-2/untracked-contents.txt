@@ -1,0 +1,64 @@
+=== tickets/002-sync-dry-run.md
+# Ticket: Add --dry-run flag to sync
+
+**Status:** draft
+**Owner (Implementer):** agent
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** (set when started)
+**Worktree:**
+
+## Problem
+
+`syncer sync <source> <target>` always copies files and creates the target
+directory. There is no way to preview which files a sync would copy
+without changing the filesystem.
+
+## Approach
+
+1. `src/sync.js`: add an optional `options` argument to
+   `sync(source, target, log, { dryRun = false } = {})`. When `dryRun` is
+   true, skip `fs.mkdirSync(target)` and `fs.copyFileSync`, log
+   `would copy <name>` instead of `copied <name>`, and still return the
+   names that would be copied. A missing target counts as "every file is
+   missing" (the existing `fs.existsSync(to)` check already handles this).
+2. `bin/sync.js`: accept `--dry-run` anywhere among the arguments (strip it
+   before reading `command source target`). Pass `{ dryRun: true }` through
+   and print `<n> file(s) would be copied` instead of
+   `<n> file(s) copied`. Update the usage line to
+   `usage: syncer sync [--dry-run] <source> <target>`.
+3. `test/sync.test.js`: add tests for dry-run behaviour (below).
+
+## Files touched
+
+- src/sync.js
+- bin/sync.js
+- test/sync.test.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `sync(src, dst, log, { dryRun: true })` returns the names that
+  would be copied and leaves `dst` unchanged (no files written). (test)
+- [ ] AC-2: With `dryRun: true` and a non-existent target, the target
+  directory is not created, and all source files are returned. (test)
+- [ ] AC-3: `node bin/sync.js sync --dry-run <src> <dst>` exits 0, prints
+  `would copy <name>` per file and `<n> file(s) would be copied`, and
+  copies nothing. (test, via child_process)
+- [ ] AC-4: Without `--dry-run`, behaviour and output are unchanged; the
+  existing test still passes. (test)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+No CONFIRM, BLOCK, or ESCALATE actions: local code and test changes only,
+no new dependencies. Not eligible for the fast path: this changes runtime
+behaviour (criterion b fails), so it needs approval.
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+## Notes for the Reviewer

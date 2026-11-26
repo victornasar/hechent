@@ -1,0 +1,91 @@
+=== tickets/002-fix-clamp-comment-typo.md
+# Ticket: Fix typo in clamp comment
+
+**Status:** in-review
+**Owner (Implementer):** Claude
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** 3cfdca0
+**Worktree:**
+
+## Problem
+
+The comment above `clamp` in `src/math.js` misspells "returns" as "retruns".
+
+## Approach
+
+1. In `src/math.js` line 1, change "retruns" to "returns". No other change.
+
+## Files touched
+
+- src/math.js
+
+## Acceptance criteria
+
+- [x] AC-1: `src/math.js` line 1 reads `// clamp returns x limited to the range [lo, hi].` (manual: read file)
+- [x] AC-2: The diff vs Baseline changes only that comment line in `src/math.js` (command: `git diff 3cfdca0 -- src/math.js`)
+- [x] AC-3: `node --test` passes (via `docket verify`)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+Nothing in the approach is BLOCK or needs CONFIRM.
+
+Fast path: yes
+- (a) PROJECT_AUDIT.md `## Workflow options` sets the fast path `on`.
+- (b) No runtime effect: the change is to a code comment only.
+- (c) Nothing CONFIRM, BLOCK, or ESCALATE: a one-word comment edit on a local working tree; no commit, push, dependency, or data change.
+- (d) Rollback plan is "Revert the commit."
+
+## Evidence
+
+### Project verify
+
+```text
+command: node --test
+exit: 0
+log: .docket/verify/002-fix-clamp-comment-typo-20261126T030632Z.log
+ran_at: 2026-11-26T03:06:32Z
+git_head: 3cfdca0b31d23b69b2c28502a3b16a44019cd3b5
+tree_fingerprint: b1b0a08b2d0cb73e495a25728e1d26b8c3f57f618e1adf8cd4e29cfc96f93eb4
+attestation: .docket/verify/002-fix-clamp-comment-typo-20261126T030632Z.json
+```
+
+### Acceptance criteria
+
+```text
+id: AC-1
+criterion: src/math.js line 1 reads `// clamp returns x limited to the range [lo, hi].`
+method: manual
+how: sed -n 1p src/math.js
+result: pass
+evidence: // clamp returns x limited to the range [lo, hi].
+
+id: AC-2
+criterion: The diff vs Baseline changes only that comment line in src/math.js
+method: command
+how: git diff 3cfdca0 -- src/math.js
+result: pass
+evidence: one hunk; `-// clamp retruns ...` / `+// clamp returns ...`; lines 2-3 unchanged
+
+id: AC-3
+criterion: node --test passes (via docket verify)
+method: command
+how: docket verify --audit PROJECT_AUDIT.md --ticket tickets/002-fix-clamp-comment-typo.md
+result: pass
+evidence: exit 0, see Project verify attestation above
+```
+
+### Scope review
+
+```text
+diff_vs_files_touched: match
+extras: none
+justified: n/a
+notes: docket check-scope PASSED (tickets/ auto-allowed)
+```
+
+## Notes for the Reviewer

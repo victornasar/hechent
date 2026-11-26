@@ -1,0 +1,41 @@
+=== tickets/002-fix-clamp-comment-typo.md
+# Ticket: Fix typo in clamp comment
+
+**Status:** draft
+**Owner (Implementer):**
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** 11ea176
+**Worktree:**
+
+## Problem
+
+The doc comment on `clamp` in `src/math.js` (line 1) misspells "returns" as "retruns".
+
+## Approach
+
+1. In `src/math.js` line 1, change "retruns" to "returns". No other changes.
+
+## Files touched
+
+- src/math.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `src/math.js` line 1 reads `// clamp returns x limited to the range [lo, hi].` (manual: read the diff)
+- [ ] AC-2: The diff vs Baseline changes only that comment line (`docket check-scope`, `git diff`)
+- [ ] AC-3: `node --test` passes (`docket verify`)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+No BLOCK or CONFIRM actions. Comment-only change with no runtime effect. Work will be committed on a feature branch, not `main` (RULES.md §1). Not fast-path eligible: the Project Audit has no `## Workflow options` section turning the fast path on.
+
+## Evidence
+
+<!-- Filled during Self-review. -->
+
+## Notes for the Reviewer

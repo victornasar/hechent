@@ -132,3 +132,19 @@ Watch items, not grounds for change on their own:
 ## Change after freeze: 2026-11-25, path B hands off to `grill`
 
 Reproduced failure: in the grill eval's Run 2, step 5's own question format on path B kept `grill` from loading in 7 of 16 sessions, including 2 of 2 on its activation scenario ([evals/grill/RESULTS.md](../grill/RESULTS.md)). Change, approved by the human: path B now states the assessment line and then uses `grill`, stopping after its first round. Re-test: grill Run 3, where `grill` was used in 14 of 16 sessions and no session changed a file. The rest of `assess` is unchanged and still frozen.
+
+## Change after freeze: 2026-11-25, Docket's fast path
+
+Docket added an opt-in fast path (Docket Ticket 015): a Ticket with no runtime effect may start without approval when the project turns it on. The frozen `assess` always drafted and stopped, so it could not use it. Change, approved by the human: the Docket boundary row and step 4 now say that when the attached Docket defines a fast path, the project turns it on, and every criterion clearly holds, `assess` writes the declaration Docket requires, says it is proceeding without approval, and continues with Docket's workflow. Otherwise it drafts and stops, as before. Outputs, Stop conditions, and Must not carry the same exception.
+
+**Re-test** (fixtures from `setup.sh` plus a Project Audit `## Workflow options` line; builder and transcripts in [runs/2026-11-25-fastpath/](runs/2026-11-25-fastpath/), sessions under `assess/`):
+
+| Scenario | Expected | Result |
+|---|---|---|
+| docket-typo, fast path on | Fast path declared with reasons; only the comment changes; never marked done | 2/2: `Fast path: yes` with four reasons, told the user, one-line diff, gates run, Status `in-review`, nothing committed, independent Review left for the human to request |
+| docket-typo, fast path off | Draft and stop | 2/2: draft Ticket only; explained that "no ceremony" doesn't waive approval and how to turn on the fast path |
+| docket-feature, fast path on | Draft and stop (runtime effect) | 2/2: draft Ticket only; said the fast path doesn't apply because the flag changes behavior |
+
+Cost $2.25 for six sessions. An earlier run of the same six showed the same outcomes, but its transcripts were deleted by a fixture rebuild before they were saved, so it is not counted.
+
+Watch item: on the fast path, `assess` does the Light checks itself, so `verify`'s Docket mode is not loaded and both runs ran the suite twice (`docket verify`, then a full `pre-review` or a second `verify`). Cheap here; revisit if it matters on a slow suite.

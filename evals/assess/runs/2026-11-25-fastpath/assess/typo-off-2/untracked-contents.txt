@@ -1,0 +1,112 @@
+=== tickets/002-fix-clamp-comment-typo.md
+# Ticket: Fix typo in clamp comment
+
+<!--
+Filled out by the Planner before any code is written. See
+core/roles/planner.md for what a ready Ticket contains.
+Do not remove sections; write "N/A" with a one-line reason if genuinely
+not applicable.
+-->
+
+**Status:** draft
+**Owner (Implementer):**
+**Retry count:** 0
+**Related project audit:** PROJECT_AUDIT.md
+**Baseline:** 11ea17673cb2ea27a5af23a030ae0ea3d2cb67d5
+**Worktree:**
+
+## Problem
+
+The doc comment on `clamp` in `src/math.js` line 1 misspells "returns" as
+"retruns".
+
+## Approach
+
+1. In `src/math.js` line 1, change `retruns` to `returns`. No other change.
+
+## Files touched
+
+- src/math.js
+
+## Acceptance criteria
+
+- [ ] AC-1: `src/math.js` line 1 reads `// clamp returns x limited to the range [lo, hi].` (artifact: file contents)
+- [ ] AC-2: The diff vs Baseline changes only that one comment line in `src/math.js` (command: `git diff`)
+- [ ] AC-3: `node --test` passes via `docket verify` (command)
+
+## Rollback plan
+
+Revert the commit.
+
+## Rules check
+
+Nothing in the approach is BLOCK or needs a CONFIRM step. Work happens on a
+feature branch, not `main` (RULES.md §1). The fast path does not apply:
+PROJECT_AUDIT.md has no `## Workflow options` section turning it on.
+
+## Evidence
+
+<!--
+Filled during Self-review by the Implementer. Leave blank at Ticket
+approval. Schema source of truth: core/recipes/recipe-self-review.md.
+An agent's claim is not evidence. Evidence is what allows the system to
+trust the claim.
+-->
+
+### Project verify
+
+```text
+command: <from `docket verify` — not typed by hand>
+exit: <from `docket verify` attestation>
+log: <path written by `docket verify`>
+ran_at: <ISO timestamp from attestation>
+git_head: <from attestation>
+tree_fingerprint: <from attestation>
+attestation: <.docket/verify/….json from `docket verify`>
+```
+
+### Acceptance criteria
+
+```text
+id: AC-1
+criterion:
+method:
+how:
+result:
+evidence:
+notes:
+
+id: AC-2
+criterion:
+method:
+how:
+result:
+evidence:
+notes:
+
+id: AC-3
+criterion:
+method:
+how:
+result:
+evidence:
+notes:
+```
+
+### Scope review
+
+```text
+diff_vs_files_touched: match | extras | missing
+extras: <paths not on Files Touched, or none>
+justified: yes | no | n/a
+notes: <if extras, why — or revert before Review>
+```
+
+<!--
+Stage 2: run `docket check-scope <ticket>` (uses Baseline + Files Touched).
+tickets/ and .docket/ are auto-allowed. Scope review fields above remain for
+the handoff; the CLI is the mechanical gate.
+-->
+
+## Notes for the Reviewer
+

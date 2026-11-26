@@ -21,6 +21,9 @@ STATUSES = ["draft", "approved", "in-progress", "in-review", "send-back", "done"
 REQUIRED = [
     ("core/WORKFLOW.md", [], "attached-mode detection"),
     ("core/WORKFLOW.md", ["docket done"], "completion procedure (DOCKET-INTEGRATION step 6)"),
+    ("core/WORKFLOW.md", ["Fast path: yes"], "fast path (assess, DOCKET-INTEGRATION step 2)"),
+    ("core/templates/project-audit.template.md", ["## Workflow options", "Fast path"],
+     "fast path opt-in (assess, DOCKET-INTEGRATION step 2)"),
     ("core/RULES.md", ["CONFIRM", "BLOCK", "ESCALATE"], "Rules check responses"),
     ("core/roles/implementer.md", [], "completion authority (DOCKET-INTEGRATION step 6)"),
     ("core/roles/reviewer.md", [], "independent Review"),
