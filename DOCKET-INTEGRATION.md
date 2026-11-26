@@ -23,7 +23,7 @@ If the signals conflict (for example `docket/` exists but the instructions do no
 | Responsibility | Owner | Boundary |
 |---|---|---|
 | Task assessment, planning depth | Hechent | In attached mode, assessment cannot exempt a code change from Docket's Ticket |
-| Requirements discovery, domain modeling, Wayfinder mapping | Hechent | Uses the repo's existing glossary file (Docket's recipes use `CONTEXT.md`; Hechent defaults to `GLOSSARY.md` only when neither exists) |
+| Requirements discovery, domain modeling, Wayfinder mapping | Hechent | Uses the repo's existing glossary file if it has one (for example `CONTEXT.md`); otherwise `GLOSSARY.md` |
 | Specifications | Hechent | A spec is planning context. It is not the contract. |
 | Proposed tickets | Hechent | Written as Docket Tickets with Status `draft` |
 | Ticket approval | Docket (the human) | Hechent never writes `approved` |
@@ -150,7 +150,6 @@ Only Docket's public surface: the Ticket template and its sections, the Status v
 
 ## Open questions
 
-1. **Overlapping recipes.** Docket ships capability recipes (code review, diagnosis, domain modeling, TDD, program design, ticket writing) and its README says skills should point into them. Under this boundary, capability belongs to Hechent. Whether Docket keeps, trims, or defers these is Docket's decision. Until then, in attached mode Hechent uses its own skills for capability and Docket's documents for the contract and gates.
-2. **Ticket granularity.** Hechent tickets are vertical slices sized to a session. Docket Tickets need exact files and a rollback plan up front. Whether one Hechent slice always maps to one Docket Ticket will be tested in Stage 4.
-3. **Wayfinder decisions.** Decision tickets resolve questions, not code, so they probably fall outside Docket's Ticket flow. Confirm against Docket's rules before Wayfinder ships.
-4. **Cursor.** Docket's Cursor adapter approximates independent Review with a fresh chat. Hechent should report that limitation rather than present it as equivalent.
+1. **Ticket granularity.** Hechent tickets are vertical slices sized to a session. Docket Tickets need exact files and a rollback plan up front. Whether one Hechent slice always maps to one Docket Ticket will be tested in Stage 4.
+2. **Wayfinder decisions.** Decision tickets resolve questions, not code, so they probably fall outside Docket's Ticket flow. Confirm against Docket's rules before Wayfinder ships.
+3. **Cursor.** Docket's Cursor adapter approximates independent Review with a fresh chat. Hechent should report that limitation rather than present it as equivalent.
