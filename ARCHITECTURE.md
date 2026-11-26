@@ -2,7 +2,7 @@
 
 How Hechent is structured. The why behind each choice lives in [PHILOSOPHY.md](PHILOSOPHY.md) (principles) and [docs/adr/](docs/adr/) (hard-to-reverse decisions).
 
-Status: Stage 2. `verify` is implemented, validated, and frozen ([evals/verify/](evals/verify/)). `assess` is implemented, validated against a control arm, and frozen ([evals/assess/](evals/assess/)). Other skills are not implemented yet. Sections marked **planned** describe the intended design and will be confirmed or revised by evidence in Stages 2 to 4.
+Status: Stage 2. `verify` is implemented, validated, and frozen ([evals/verify/](evals/verify/)). `assess` is implemented, validated against a control arm, and frozen ([evals/assess/](evals/assess/)). `grill` is implemented, validated against a control arm, and frozen ([evals/grill/](evals/grill/)). Other skills are not implemented yet. Sections marked **planned** describe the intended design and will be confirmed or revised by evidence in Stages 2 to 4.
 
 ## Layers
 
@@ -77,7 +77,7 @@ The smallest set that carries a task end to end. Each row must earn its place in
 | Area | Skill | Job |
 |---|---|---|
 | Discovery | `assess` | **Implemented, frozen** (change only for a reproduced failure; see [evals/assess/RESULTS.md](evals/assess/RESULTS.md)). Decide planning path and verification level independently, and apply four separate authority boundaries. Written to close the gaps the no-skill baseline showed, not to restate what the model already does. |
-| Planning | `grill` | Align on intent and domain language, record terms and decisions, write the spec |
+| Planning | `grill` | **Implemented, frozen** (change only for a reproduced failure; see [evals/grill/RESULTS.md](evals/grill/RESULTS.md)). Resolve the decisions that are the user's with the fewest grounded questions: sort open points into Settled, Mine, Theirs, and out of scope; ask only Theirs, prerequisites first, holding dependents. Recording terms and writing the spec are not built yet. |
 | Planning | `wayfinder` | Map a foggy effort as decision tickets; resolve one per session |
 | Planning | `to-tickets` | Split a spec into vertical-slice tickets with blocking edges, when it exceeds one session. With Docket attached, writes draft Docket Tickets instead. |
 | Execution | `implement` | Build from a spec or ticket: isolate, follow conventions, targeted checks, TDD at agreed seams |

@@ -27,11 +27,11 @@ Not for: deciding the planning path or verification level (`assess`); questions 
    - **Theirs:** a wrong choice changes what users see or are charged, a legal or contractual obligation, permissions, data retention, or a contract with another system, and the repository does not settle it. Only these become questions.
    - **Not in scope:** features or policies the request doesn't call for (a fee nobody mentioned, filters, extra options). Don't ask about them; note in one line that you left them out.
 
-2. **Order the questions.** If a question's options depend on the answer to another open question, hold it for a later round. Ask the prerequisite now. Done when this round contains only questions whose options do not depend on unanswered ones.
+2. **Order the questions.** For each question, ask: would a different answer to another open question change its options, its recommendation, or whether it needs asking at all? If yes, it depends on that question: hold it for a later round and ask the prerequisite now. Rules for something whose shape is still open are dependents (how a cancelled subscription is refunded, before anyone has decided whether billing is monthly or yearly). Done when this round contains only questions that depend on no unanswered one, and each held question is listed under **Held**.
 
 3. **Ask.** One decision per question, at most five per round, usually fewer. For each: what the repository establishes, what it leaves unknown, two or three genuinely different options with their consequences, and your recommendation with its reason. Before the questions, list Settled (briefly) and Mine (one line each), so the user can veto either. Then stop. Do not implement while any Theirs question is open.
 
-4. **Take the answer.** Move what it settles to Settled, including decisions it settles implicitly. Never re-ask an answered decision. Release any held questions whose prerequisites are now answered. If nothing in Theirs remains, stop grilling and proceed as authorized. Done when the lists reflect the answer.
+4. **Take the answer.** Move what it settles to Settled, including decisions it settles implicitly. Never re-ask an answered decision. Release any held questions whose prerequisites are now answered, and ask them next round: a held question is still Theirs even when the answer makes one option the obvious one. Recommend that option; don't decide it. If nothing in Theirs remains, stop grilling and proceed as authorized. Done when the lists reflect the answer.
 
 5. **When implementation unsettles a decision.** If new information (a fixed external format, a constraint in the code) breaks a Settled decision, stop only the work that depends on it and continue the rest. Ask only about the broken decision: what you found, why the agreed approach no longer fits, and the options with their consequences. Do not reopen other Settled decisions, and do not change the constraint itself (an external schema, an ADR) to make the conflict go away.
 
@@ -39,7 +39,7 @@ Not for: deciding the planning path or verification level (`assess`); questions 
 
 ## Outputs
 
-- A round: **Settled** (brief), **Mine** (one line each), **Questions** (numbered, at most five), then stop.
+- A round: **Settled** (brief), **Mine** (one line each), **Questions** (numbered, at most five), **Held** (one line each: the question and what it waits on), then stop.
 - After the last answer: the final Settled list, then the authorized next step.
 - During implementation: the one unsettled decision and its options, plus what work continues meanwhile.
 

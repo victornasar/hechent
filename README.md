@@ -24,7 +24,7 @@ The idea behind it: you don't need an elaborate agent pipeline. You need good en
 |---|---|---|
 | [`assess`](skills/assess/SKILL.md) | Runs before any change. Decides two things separately: how much planning the work needs, and how much verification. Then identifies what needs a human: an open decision, a confirmation before an irreversible action, or a review afterwards | Stable |
 | [`verify`](skills/verify/SKILL.md) | Establishes, by actually running things, whether a change works. Read-only: it reports problems and their causes, and does not quietly fix them | Stable |
-| [`grill`](skills/grill/SKILL.md) | Resolves open decisions with the fewest useful questions. It separates what's already settled, what the agent can decide itself, and what only you can decide | Experimental |
+| [`grill`](skills/grill/SKILL.md) | Resolves open decisions with the fewest useful questions. It separates what's already settled, what the agent can decide itself, and what only you can decide | Stable |
 
 Planning paths that `assess` chooses between:
 
@@ -38,6 +38,7 @@ Each skill is tested the same way: realistic scenarios, run in fresh agent sessi
 
 - **`verify`:** 10 of 10 sessions with the skill met every outcome, against 3 of 10 without it. The difference came from checking the code before the change instead of assuming, and from finding everything that calls a changed permission check.
 - **`assess`:** 21 of 22 sessions with the skill met every outcome, against 12 of 22 without it. The gains were exactly where it was aimed: agents stopped making consequential decisions for the user and flagged permission changes for review. Trivial changes stayed cheap: a one-word fix costs about 1.35× the no-skill baseline.
+- **`grill`:** without it, agents filled their question budget with choices they should have made themselves (columns, rounding, where a field lives) and reopened decisions already agreed. With it, nearly every question is one only the user can answer, agreed decisions stay settled when new information turns up, and follow-up questions wait for the answers they depend on. In the final runs, no session wrote code while a decision that was the user's stayed open.
 
 The scenarios, grading criteria, results, and every session transcript are in [`evals/`](evals/). Read them before trusting the numbers above.
 

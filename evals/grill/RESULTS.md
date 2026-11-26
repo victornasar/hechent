@@ -120,3 +120,23 @@ Remaining weaknesses, not yet grounds for another change:
 ### Verdict on Run 4
 
 Weakness 1 is mostly closed: immaterial money-adjacent questions dropped from 9 across scenarios 4, 6, and 8 in Run 3 to 1 (invoice display, scenario 8 run 2), with no material decision missed that Run 3 caught. Still open: dependents asked alongside their prerequisite in scenario 4 turn 1 (partial since Run 2), and the amount format in scenario 3 read as settled (consistent across runs; a question about the contract, not the skill). `grill` stays experimental; freezing it is the human's decision.
+
+## Run 5: 2026-11-25, sequencing (targeted)
+
+**Change under test.** Step 2 gives a concrete dependency test (would another open answer change this question's options, recommendation, or need?) and requires held questions to be listed under **Held**; Outputs adds the Held list. Aimed at the one defect left after Run 4: dependents asked alongside their prerequisite in scenario 4.
+
+**Run 5a** (scenarios 2, 4, 6, 8, four runs each; transcripts [runs/2026-11-25-grill-seq/](runs/2026-11-25-grill-seq/), $5.32). Scenario 4 turn 1: the late fee held in 4/4 (Run 4: asked in 2/2), the missed-installment rule held in 2/4. Scenarios 2 and 8 unchanged (1 question; 1 to 2 questions, agreed decisions settled). **Regression in scenario 6:** 2/4 sessions held refund proration correctly in turn 1, then after "Percentage discounts, applied before VAT" judged it settled by the answer and implemented. That fails O4; no earlier grill run had implemented.
+
+**Fix.** Step 4: a released held question is asked next round, still Theirs even when the answer makes one option obvious; recommend it, don't decide it.
+
+**Run 5b** (scenarios 4 and 6, four runs each; transcripts [runs/2026-11-25-grill-seq2/](runs/2026-11-25-grill-seq2/), $3.28). No session changed a file (8/8). Scenario 6: refund handling held in turn 1 in 4/4 and, in turn 2, asked (1 run) or held with a recommendation pending its last prerequisite, whole order vs per line (3 runs). Scenario 4: turn 1 held both the late fee and the missed-installment rule in 4/4; turn 2 kept the late fee held until the missed-installment rule was answered. One run asked about reminders in turn 2 (immaterial).
+
+## Scenario 3 amount format: an eval ambiguity, not a skill defect
+
+Runs 2 to 4 consistently treated the CSV amount format as settled, stated for veto. The fixture's `src/pdf.js` says the PDF export "defines the invoice fields shown to customers and accountants", formats the total with `formatCents`, and its only test asserts `total: 1200.00`. Following that precedent is a cheap, reversible choice that `grill` correctly lists under Mine with its grounding. The contract still lists it as material and is not rewritten after results; it is graded as "stated, not asked" and is not grounds for a skill change.
+
+## Decision: grill frozen
+
+Activation 16/16 since the `assess` handoff (Run 3 on); settled decisions stay settled (scenario 8, 2/2 in Runs 3 and 4, 4/4 in Run 5a); immaterial questions down from 83 prompts in Hechent base to a residue of one or two per run; dependents held (Run 5b); no implementation with a Theirs decision open (8/8 in Run 5b). `skills/grill/` is frozen: change it only for a reproduced failure.
+
+Watch items: an occasional immaterial question (invoice display in scenario 8, reminders in scenario 4); grill does not continue unaffected work while a conflict is open (scenario 8; allowed, not required).

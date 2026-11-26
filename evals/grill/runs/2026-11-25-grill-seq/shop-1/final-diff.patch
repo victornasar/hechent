@@ -1,0 +1,86 @@
+diff --git a/src/invoice.js b/src/invoice.js
+index 27f7ce8..af2851e 100644
+--- a/src/invoice.js
++++ b/src/invoice.js
+@@ -1,8 +1,8 @@
+-const { subtotal } = require('./order');
++const { subtotal, discount } = require('./order');
+ const { tax } = require('./tax');
+ // Invoices are legal documents: each line shown here must reconcile with the totals.
+ function invoice(order) {
+-  const sub = subtotal(order); const t = tax(order);
+-  return { lines: order.lines, subtotalCents: sub, taxCents: t, totalCents: sub + t };
++  const sub = subtotal(order); const d = discount(order); const t = tax(order);
++  return { lines: order.lines, subtotalCents: sub, discountCents: d, taxCents: t, totalCents: sub - d + t };
+ }
+ module.exports = { invoice };
+diff --git a/src/order.js b/src/order.js
+index c0961c8..ded7499 100644
+--- a/src/order.js
++++ b/src/order.js
+@@ -1,3 +1,11 @@
+ // An order is a list of lines; amounts are in cents.
++// Optional discountPercent (0-100, default 0) is a percentage off the whole order, applied before VAT.
+ function subtotal(order) { return order.lines.reduce((s, l) => s + l.unitCents * l.qty, 0); }
+-module.exports = { subtotal };
++function discountPercent(order) {
++  const p = order.discountPercent === undefined ? 0 : order.discountPercent;
++  if (typeof p !== 'number' || !Number.isFinite(p) || p < 0 || p > 100) throw new Error('discountPercent must be between 0 and 100');
++  return p;
++}
++function discount(order) { return Math.round(subtotal(order) * discountPercent(order) / 100); }
++function discountedSubtotal(order) { return subtotal(order) - discount(order); }
++module.exports = { subtotal, discountPercent, discount, discountedSubtotal };
+diff --git a/src/refund.js b/src/refund.js
+index c45a005..fe609bf 100644
+--- a/src/refund.js
++++ b/src/refund.js
+@@ -1,9 +1,10 @@
+ const { RATE } = require('./tax');
+-// Refund one order line: the line's price plus the VAT charged on it.
++const { discountPercent } = require('./order');
++// Refund one order line: the line's price after the order discount, plus the VAT charged on it.
+ function refundLine(order, lineIndex, qty) {
+   const line = order.lines[lineIndex];
+   if (qty > line.qty) throw new Error('cannot refund more than was bought');
+-  const net = line.unitCents * qty;
++  const net = Math.round(line.unitCents * qty * (100 - discountPercent(order)) / 100);
+   return net + Math.round(net * RATE);
+ }
+ module.exports = { refundLine };
+diff --git a/src/tax.js b/src/tax.js
+index d105c61..56cde99 100644
+--- a/src/tax.js
++++ b/src/tax.js
+@@ -1,4 +1,4 @@
+-const { subtotal } = require('./order');
+-const RATE = 0.2; // VAT, charged on the order subtotal
+-function tax(order) { return Math.round(subtotal(order) * RATE); }
++const { discountedSubtotal } = require('./order');
++const RATE = 0.2; // VAT, charged on the order subtotal after any discount
++function tax(order) { return Math.round(discountedSubtotal(order) * RATE); }
+ module.exports = { tax, RATE };
+diff --git a/test/shop.test.js b/test/shop.test.js
+index 901c413..fed5988 100644
+--- a/test/shop.test.js
++++ b/test/shop.test.js
+@@ -4,3 +4,19 @@ const { refundLine } = require('../src/refund');
+ const order = { lines: [{ sku: 'a', unitCents: 1000, qty: 2 }, { sku: 'b', unitCents: 500, qty: 1 }] };
+ test('invoice totals reconcile', () => { const i = invoice(order); assert.strictEqual(i.totalCents, i.subtotalCents + i.taxCents); assert.strictEqual(i.totalCents, 3000); });
+ test('refund includes VAT on the line', () => assert.strictEqual(refundLine(order, 0, 1), 1200));
++const discounted = { ...order, discountPercent: 10 };
++test('discount is taken before VAT and the invoice reconciles', () => {
++  const i = invoice(discounted);
++  assert.strictEqual(i.subtotalCents, 2500); assert.strictEqual(i.discountCents, 250);
++  assert.strictEqual(i.taxCents, 450); assert.strictEqual(i.totalCents, 2700);
++  assert.strictEqual(i.totalCents, i.subtotalCents - i.discountCents + i.taxCents);
++});
++test('no discount means discountCents is 0', () => assert.strictEqual(invoice(order).discountCents, 0));
++test('discount rounds to the cent', () => {
++  const i = invoice({ lines: [{ sku: 'c', unitCents: 999, qty: 1 }], discountPercent: 12.5 });
++  assert.strictEqual(i.discountCents, 125); assert.strictEqual(i.taxCents, 175); assert.strictEqual(i.totalCents, 1049);
++});
++test('refund applies the order discount', () => assert.strictEqual(refundLine(discounted, 0, 1), 1080));
++test('invalid discount is rejected', () => {
++  for (const p of [-1, 101, NaN, '10']) assert.throws(() => invoice({ ...order, discountPercent: p }));
++});
