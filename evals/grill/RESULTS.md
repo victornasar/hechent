@@ -62,3 +62,38 @@ No session in this arm changed a file. No fact questions.
 Where it loaded, `grill` closed gap 1 (materiality) and partly closed gap 2 (dependencies). Gap 3 (settled decisions stay settled) could not be tested: in scenario 8 the skill never loaded, and the agent behaved exactly like Hechent base, reopening the agreed design with 4 to 5 questions.
 
 **Reproduced integration failure.** `assess` step 5 tells the agent to ask its own questions on path B, which duplicates `grill`'s job and keeps it from loading (7/16 sessions, including 2/2 on the activation scenario). This is grounds to change the frozen `assess`, under its freeze rule. Proposed change, awaiting the human's decision: in `assess` step 5, path B becomes "state the assessment, then use `grill` to resolve the decisions", removing `assess`'s own question format so the two skills do not compete. Re-run this arm after the change.
+
+## Run 3: 2026-11-25, Hechent + grill arm after the `assess` handoff
+
+**Change under test.** `assess` step 5, path B: "then at most five numbered questions ..." became "then use the `grill` skill to resolve the decisions. Stop after its first round." Nothing else changed. The human approved this change to the frozen skill on the evidence of Run 2.
+
+**Method.** Identical to Run 2: same fixtures, prompts, scripted replies, runner, and model (`claude-opus-5-5`). Transcripts: [runs/2026-11-25-grill-v2/](runs/2026-11-25-grill-v2/). Cost $4.39.
+
+### Activation
+
+`grill` was used in **14 of 16** sessions (Run 2: 9 of 16): loaded through the skill tool in 13, and read directly from its `SKILL.md` in one (scenario 8, run 1). The two sessions that did not use it are scenario 1, where the repository answers everything and both runs correctly asked nothing. Scenario 8, the activation scenario, went from 0/2 to 2/2. No session changed a file. No fact questions.
+
+### Results by scenario
+
+| # | Scenario | Run 2 (grill arm) | Run 3 |
+|---|---|---|---|
+| 1 | rate-limit (material: none) | 0 and 1 prompts | **0 and 0.** ADR rules listed as Settled; separate counters and check order listed as the agent's calls |
+| 2 | archive (material: quota) | 1 | **1 and 1**: the quota question only, with the unarchive-at-limit follow-up held for a later round |
+| 3 | csv-export (material: 3) | 2 and 3; amount format treated as settled by `formatCents` in one run | 3 and 2. Both runs treated the amount format as settled by `formatCents` and listed it for veto (partial, as in Run 2). Run 1 added one immaterial question (export filters) |
+| 4 | installments (dependencies) | Late fee held back (2/2); some schedule-adjacent questions in round 1 | Late fee held back until the overdue rule is answered (run 1); schedule asked before dependents. Turn 2 used the scripted answer and did not re-ask it, but asked 5 questions in both runs, including reminders and a plan fee (immaterial). Rounding decided and stated as the agent's call (allowed). Partial |
+| 5 | cleanup (false premise) | `grill` not loaded | Premise corrected in both runs (tokens are revoked, not deleted); the delete-or-revoke decision asked with an ADR-grounded recommendation; run 2 also asked the evidence-backed retention question. Nothing written |
+| 6 | shop (partial answer) | Turn 2: 1 prompt, rest held | Turn 2 acknowledged both settled answers in both runs. Run 1 asked refund proration plus invoice display (one immaterial); run 2 asked only whole-order vs per-line, the prerequisite for proration. Nothing implemented |
+| 7 | legacy-table ("just decide") | `grill` not loaded | Both runs decided the safe option (keep the table until the report no longer reads it, or keep it outright), wrote nothing, and held the irreversible drop for explicit confirmation |
+| 8 | shop-ledger (activation) | `grill` not loaded; agreed design reopened with 4 to 5 questions | **Agreed decisions stayed settled in 2/2**: percentage, before VAT, and proration listed as Settled, never asked. The ledger conflict recognized, the schema left untouched, options with consequences and a recommendation. But each run also asked two decisions outside the material list (invoice display, refund rounding) and neither proceeded on unaffected work |
+
+### Verdict on Run 3
+
+The handoff fixed activation: `grill` now runs whenever `assess` chooses path B. Gap 3 (settled decisions stay settled) was testable for the first time and closed in 2/2. Gap 1 (materiality) holds in scenarios 1, 2, 5, and 7, and mostly in 3 and 6.
+
+Remaining weaknesses, not yet grounds for another change:
+
+1. **Extra decisions on money-adjacent work** (scenario 4 turn 2, scenario 8): questions about invoice display, rounding, reminders, and fees that the contract counts as immaterial. Some cite real code (`invoice.js:3` says lines must reconcile), so a stricter grader might accept one of them as an unexpected material decision.
+2. **Stops all work instead of only the affected work** (scenario 8). The contract allows unaffected work to continue; neither run did. Safer, but slower.
+3. **Amount format read as settled** (scenario 3, 2/2 here, 1/2 in Run 2). Consistent enough to decide whether `formatCents` in the PDF export really settles it, rather than counting it as a miss each time.
+
+`grill` stays experimental. Freezing it is the human's decision.

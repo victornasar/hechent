@@ -50,7 +50,7 @@ Not for: questions that need only an answer; verifying finished work (use `verif
 
 5. **State it and act on it.**
    - **A:** `Assess: one-shot · <level>, because <reason>` (plus any boundary), then do the work and verify it at that level. For an obvious, narrowly scoped Light change, do the Light checks yourself instead of loading `verify`: read the diff, confirm only the intended change happened, run the relevant example or link check if there is one, and report what you checked. Anything less straightforward goes through `verify`.
-   - **B:** `Assess: grill · <level>, because <reason>`, then at most five numbered questions. Each cites what you found in the code and gives a recommended answer. Stop.
+   - **B:** `Assess: grill · <level>, because <reason>`, then use the `grill` skill to resolve the decisions. Stop after its first round.
    - **C:** the destination as you understand it and the first decisions on the way to it, each grounded in the code. Stop.
 
 ## Outputs

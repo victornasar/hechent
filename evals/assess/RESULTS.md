@@ -128,3 +128,7 @@ Watch items, not grounds for change on their own:
 1. **Assessment line omitted on one-shot work** (9/22 in Run 2). B, C, and Docket sessions always stated it. Investigate only if a missing line hides a wrong path or level.
 2. **Labeling of inferred practice on low-stakes docs** (scenario 3, one session in Run 2 less explicit than control). Investigate if it recurs.
 3. **Wayfinder routing is untested.** Scenario 8 validates "don't build an unresolved architectural request", not the choice of C. Test it with a larger fixture when `wayfinder` exists.
+
+## Change after freeze: 2026-11-25, path B hands off to `grill`
+
+Reproduced failure: in the grill eval's Run 2, step 5's own question format on path B kept `grill` from loading in 7 of 16 sessions, including 2 of 2 on its activation scenario ([evals/grill/RESULTS.md](../grill/RESULTS.md)). Change, approved by the human: path B now states the assessment line and then uses `grill`, stopping after its first round. Re-test: grill Run 3, where `grill` was used in 14 of 16 sessions and no session changed a file. The rest of `assess` is unchanged and still frozen.
